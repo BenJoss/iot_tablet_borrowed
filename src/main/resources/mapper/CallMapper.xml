@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.huafen.tablet.mapper.CallMapper">
+
+<resultMap type="com.huafen.tablet.model.chat.CallMsgDTO" id="callChatList">
+    <result property="userID" column="USER_ID" />
+    <result property="userName" column="USER_NAME" />
+    <result property="chatMsg" column="CHAT_MSG" />
+    <result property="chatTime" column="CREATE_TIME" />
+    <result property="state" column="CHAT_STATE" />
+    <result property="createTime" column="CHAT_CREATE_TIME" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.chat.CallRmLtShowDTO" id="callRmLtChat">
+    <result property="roomID" column="ROOM_ID" />
+    <result property="roomName" column="ROOM_NAME" />
+    <result property="roomImg" column="ROOM_IMG" />
+    <result property="meetID" column="MEETING_ID" />
+    <result property="meetName" column="MEET_NAME" />
+    <result property="lastChat" column="CHAT_MSG" />
+    <result property="chatTime" column="CHAT_TIME" />
+    <result property="chatState" column="CHAT_STATE" />
+    <result property="createTime" column="CREATE_TIME" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.chat.CallRmStatDTO" id="callRmStatMap">
+    <result property="roomID" column="ROOM_ID" />
+    <result property="roomName" column="ROOM_NAME" />
+    <result property="meetID" column="MEET_ID" />
+    <result property="meetName" column="MEET_NAME" />
+    <result property="meetInfo" column="MEET_CONTENT" />
+    <result property="meetTime" column="MEET_TIME" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.room.CallRoomDAO" id="callRoomList">
+    <result property="roomID" column="ROOM_ID" />
+    <result property="roomName" column="ROOM_NAME" />
+    <result property="roomImg" column="ROOM_IMG" />
+    <result property="roomAddr" column="ROOM_ADDR" />
+    <result property="floorID" column="FLOOR_ID" />
+    <result property="floor" column="FLOOR" />
+    <result property="order" column="RM_ORDER" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.iot.IotFloor" id="iotFloorList">
+    <result property="floor" column="CON_VALUE" />
+    <result property="order" column="CON_ORDER" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.iot.IotAddress" id="iotAddressList">
+    <result property="address" column="CON_VALUE" />
+    <result property="order" column="CON_ORDER" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.iot.IotRMClaTypDTO" id="iotRMClaTypList">
+    <result property="roomID" column="ROOM_ID" />
+    <result property="classID" column="CLASS_ID" />
+    <result property="className" column="CLASS_NAME" />
+    <result property="classType" column="CLASS_TYPE" />
+    <result property="updateTime" column="UPDATE_TIME" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.iot.IotRMContInfoDTO" id="iotRMContList">
+    <result property="classID" column="CLASS_ID" />
+    <result property="contID" column="CONT_ID" />
+    <result property="contName" column="CONT_NAME" />
+    <result property="contType" column="CONT_TYPE" />
+    <result property="pubPath" column="PUB_PATH" />
+    <result property="editPath" column="EDIT_PATH" />
+    <result property="updateTime" column="UPDATE_TIME" />
+</resultMap>
+
+<select id="queryIotRoomClass" resultMap="iotRMClaTypList" parameterType="com.huafen.tablet.model.param.IotRMClParam">
+		SELECT
+			`ROOM_ID`,
+			`CLASS_ID`,
+			`CLASS_NAME`,
+			 CASE   CLASS_TYPE 
+					WHEN '1' THEN
+					'分类' ELSE '其他' 
+				END  CLASS_TYPE,
+			`CLASS_AUTH`,
+			`CLASS_ORDER`,
+			 DATE_FORMAT(`UPDATE_TIME` , '%Y-%m-%d %H:%i:%s')  UPDATE_TIME
+		FROM
+			t_iot_room_classify t
+			WHERE 1=1
+			<if test = "roomID != null and roomID != ''">
+			 AND t.ROOM_ID=#{roomID}
+			</if>
+</select>
+
+<select id="queryIotRoomCont" resultMap="iotRMContList" parameterType="com.huafen.tablet.model.param.IotRMConParam">
+			SELECT
+				`CLASS_ID`,
+				`CONT_ID`,
+				`CONT_NAME`,
+			CASE
+					CONT_TYPE 
+					WHEN '1' THEN
+					'页面' ELSE '其他' 
+				END CONT_TYPE,
+				`PUB_PATH`,
+				`EDIT_PATH`,
+				`CONT_ORDER`,
+				DATE_FORMAT( `UPDATE_TIME`, '%Y-%m-%d %H:%i:%s' ) UPDATE_TIME 
+			FROM
+				t_iot_room_content t 
+			WHERE
+				1 =1
+			<if test = "classID != null and classID != ''">
+			    AND t.CLASS_ID=#{classID}
+			</if>				
+</select>
+
+<select id="queryIotFloorList" resultMap="iotFloorList" parameterType="com.huafen.tablet.model.param.IotConfig">
+		SELECT
+			CON_VALUE,
+			CON_ORDER 
+		FROM
+			t_iot_config t 
+		WHERE
+			t.CON_TYPE = #{type} 
+		ORDER BY
+			t.CON_ORDER ASC
+</select>
+
+<select id="queryIotAddrList" resultMap="iotAddressList" parameterType="com.huafen.tablet.model.param.IotConfig">
+		SELECT
+			CON_VALUE,
+			CON_ORDER 
+		FROM
+			t_iot_config t 
+		WHERE
+			t.CON_TYPE = #{type} 
+		ORDER BY
+			t.CON_ORDER ASC
+</select>
+
+    <select id="queryCallChatList" resultMap="callChatList" parameterType="com.huafen.tablet.model.param.ChatParam">
+			SELECT 
+			USER_ID,
+			(SELECT USER_NAME FROM t_call_service_user a WHERE a.USER_ID=t.USER_ID LIMIT 1) AS USER_NAME ,
+			CHAT_MSG,
+			CASE  CHAT_STATE 
+					WHEN '1' THEN
+					'已读' 
+					WHEN '2' THEN
+					'未读' 
+				END CHAT_STATE,			
+			FROM_UNIXTIME(CREATE_TIME) AS CREATE_TIME,
+			CREATE_TIME AS CHAT_CREATE_TIME
+			FROM `t_call_service_chat` T
+			WHERE 1=1
+	        <if test = "roomID != null">
+	           AND  T.ROOM_ID = #{roomID}
+	        </if>
+	        <if test = "lastChatTime != null and lastChatTime != ''">
+	          AND T.CREATE_TIME <![CDATA[<=]]> UNIX_TIMESTAMP(#{lastChatTime})
+	        </if>
+	        <if test = "lastChatTime == null or lastChatTime == ''">
+	            AND T.CREATE_TIME <![CDATA[<=]]> (SELECT MAX(CREATE_TIME) FROM `t_call_service_chat` T WHERE 1=1 AND  T.ROOM_ID = #{roomID})
+	        </if>	        
+	        ORDER BY CREATE_TIME DESC
+	        LIMIT #{count}
+    </select>
+    
+    <select id="queryCallRoomChatList" resultMap="callRmLtChat" parameterType="com.huafen.tablet.model.param.ChatParam">
+				SELECT 
+					ROOM_ID,
+					(SELECT ROOM_NAME FROM t_call_service_room b WHERE b.ROOM_ID=t.ROOM_ID LIMIT 1) AS ROOM_NAME ,
+					(SELECT ROOM_IMG FROM t_call_service_room b WHERE b.ROOM_ID=t.ROOM_ID LIMIT 1) AS ROOM_IMG ,
+					MEETING_ID,
+					(SELECT MEET_NAME FROM t_call_service_meet b WHERE b.MEET_ID=t.MEETING_ID LIMIT 1) AS MEET_NAME ,
+					USER_ID,
+					(SELECT USER_NAME FROM t_call_service_user a WHERE a.USER_ID=t.USER_ID LIMIT 1) AS USER_NAME ,
+					CHAT_MSG,
+					CASE
+					   CHAT_STATE 
+							WHEN '1' THEN
+							'已读' 
+							WHEN '2' THEN
+							'未读' 
+						END CHAT_STATE,	
+					CREATE_TIME,
+					FROM_UNIXTIME(CREATE_TIME) AS CHAT_TIME
+				FROM `t_call_service_chat` T
+				WHERE 1=1
+				<if test = "roomID != null">
+				   AND ROOM_ID=#{roomID}
+				</if>
+				  AND  T.CREATE_TIME<![CDATA[<=]]>UNIX_TIMESTAMP(NOW())
+				ORDER BY CREATE_TIME DESC
+				LIMIT 1    
+    </select>
+    
+    <select id="queryCallRmStatInfo" resultMap="callRmStatMap" parameterType="com.huafen.tablet.model.param.CallRmParam">
+				SELECT
+				 ROOM_ID,
+				 (SELECT ROOM_NAME FROM t_call_service_room b WHERE b.ROOM_ID=t.ROOM_ID LIMIT 1) AS ROOM_NAME,
+				 MEET_ID,
+				 MEET_NAME,
+				 MEET_CONTENT,
+				 MEET_APPLY,
+				 MEET_ADDR,
+				 MEET_STRTIME,
+				 MEET_TIME
+				 FROM
+				t_call_service_meet t
+				WHERE 1=1
+				<if test = "roomID != null">
+				   AND ROOM_ID=#{roomID}
+				</if>
+				<if test = "meetID != null">
+				   AND MEET_ID=#{meetID}
+				</if>
+				LIMIT 1
+    </select>
+    
+    <select id="queryCallRoomList" resultMap="callRoomList" parameterType="com.huafen.tablet.model.param.CallMTParam">
+    			SELECT 
+					ROOM_ID,
+					ROOM_NAME,
+					ROOM_ADDR,
+					FLOOR_ID,
+					FLOOR,
+					ROOM_IMG,
+					RM_ORDER
+				FROM `t_call_service_room` T
+				WHERE 1=1
+				<if test = "source != null and source != ''">
+				   AND T.SOURCE=#{source}
+				</if>		
+				<if test = "floor != null and floor != ''">
+				   AND T.FLOOR=#{floor}
+				</if>
+				<if test = "roomName != null and roomName != ''">
+				   AND T.ROOM_NAME LIKE CONCAT('%',#{roomName},'%')
+				</if>
+				<if test = "roomAddr != null and roomAddr != ''">
+				   AND T.ROOM_ADDR=#{roomAddr}
+				</if>
+				ORDER BY RM_ORDER ASC														
+    </select>
+    
+    
+    <select id="countCallRoomPage" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.PageBean">
+    			SELECT 
+					COUNT(1)
+				FROM `t_call_service_room` T
+				WHERE 1=1
+				<if test = "source != null and source != ''">
+				   AND T.SOURCE=#{source}
+				</if>		
+				<if test = "floor != null and floor != ''">
+				   AND T.FLOOR=#{floor}
+				</if>
+				<if test = "roomName != null and roomName != ''">
+				   AND T.ROOM_NAME LIKE CONCAT('%',#{roomName},'%')
+				</if>
+				<if test = "roomAddr != null and roomAddr != ''">
+				   AND T.ROOM_ADDR=#{roomAddr}
+				</if>													
+    </select>    
+    
+    <select id="queryCallRoomPageList" resultMap="callRoomList" parameterType="com.huafen.tablet.model.iot.PageBean">
+				SELECT
+					ROOM_ID,
+					ROOM_NAME,
+					ROOM_ADDR,
+					FLOOR_ID,
+					FLOOR,
+					ROOM_IMG,
+					RM_ORDER 
+				FROM
+					`t_call_service_room` T 
+				WHERE
+					1 = 1  
+					<if test = "source != null and source != ''">
+						 AND T.SOURCE=#{source}
+					</if>		
+					<if test = "floor != null and floor != ''">
+						 AND T.FLOOR=#{floor}
+					</if>
+					<if test = "roomName != null and roomName != ''">
+						 AND T.ROOM_NAME LIKE CONCAT('%',#{roomName},'%')
+					</if>
+					<if test = "roomAddr != null and roomAddr != ''">
+						 AND T.ROOM_ADDR=#{roomAddr}
+					</if>
+					LIMIT #{start}, #{pageSize}
+    </select>
+    
+    <select id="countCallRoom" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.ChatParam">
+               SELECT COUNT(1) FROM t_call_service_room t WHERE t.ROOM_ID=#{roomID} AND SOURCE=#{source}
+    </select>
+    
+    <select id="countIOTRoom" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.CallMTParam">
+               SELECT COUNT(1) FROM t_call_service_room t 
+               WHERE 1=1
+               <if test = "roomID != null">
+                  AND t.ROOM_ID=#{roomID} 
+               </if>
+               AND T.SOURCE=#{source}
+    </select>
+    
+    <select id="countCallMeet" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.CallMTParam">
+               SELECT COUNT(1) FROM t_call_service_meet t WHERE t.MEET_ID=#{meetID}
+    </select>
+    
+    <select id="countCallUser" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.CallAuthParam">
+               SELECT COUNT(1) FROM t_call_service_user t WHERE t.USER_ID=#{userID}
+    </select>    
+    
+    <update id="updateCallRoom" parameterType="com.huafen.tablet.model.room.CallRoomDAO">
+       update t_call_service_room t 
+       set 
+       <if test="roomName != null and roomName !=''">
+          ROOM_NAME = #{roomName},
+       </if>
+       <if test="roomAddr != null and roomAddr !=''">
+          ROOM_ADDR=#{roomAddr},
+       </if>
+       <if test="floor != null and floor !=''">
+          FLOOR=#{floor},
+       </if>
+       <if test="roomImg != null and roomImg !=''">
+          ROOM_IMG=#{roomImg},
+       </if>       
+       UPDATE_TIME = NOW()
+       WHERE 	ROOM_ID=#{roomID} AND SOURCE=#{source}
+    </update>
+
+    <update id="updateCallMeet" parameterType="com.huafen.tablet.model.room.CallMTInfoDAO">
+       update t_call_service_meet t set
+       <if test="meetName != null and meetName !=''">
+             MEET_NAME = #{meetName},
+       </if>
+	   <if test="meetCont != null and meetCont !=''">
+	         MEET_CONTENT=#{meetCont},
+	   </if>
+       <if test="notices != null and notices !=''">
+              NOTICES=#{notices},
+       </if>
+      <if test="meetApply != null and meetApply !=''">
+          MEET_APPLY=#{meetApply},
+      </if>
+      <if test="meetAddr != null and meetAddr !=''">
+          MEET_ADDR=#{meetAddr},
+      </if>
+      <if test="startTime != null and startTime !=''">
+          MEET_STRTIME=#{startTime},
+      </if>
+      <if test="endTime != null and endTime !=''">
+          MEET_ENDTIME=#{endTime},
+      </if>
+      <if test="meetTime != null and meetTime !=''">
+          MEET_TIME=#{meetTime},
+      </if>      
+       UPDATE_TIME = NOW()
+       WHERE 	MEET_ID=#{meetID}
+    </update>
+    
+    <update id="updateIOTRoomClass" parameterType="com.huafen.tablet.model.iot.IotRMClMdDTO">
+       update t_iot_room_classify t 
+		SET
+		<if test="className != null and className !=''">
+		     t.CLASS_NAME=#{className},
+		</if>
+		t.UPDATE_TIME=NOW()	  
+		WHERE t.ROOM_ID=#{roomID}
+		AND   t.CLASS_ID=#{classID}		
+    </update>
+    
+    <update id="updateIOTRMCont" parameterType="com.huafen.tablet.model.iot.IotRMCoMdDTO">
+       update t_iot_room_content t 
+		SET
+		<if test="contName != null and contName !=''">
+		     t.CONT_NAME=#{contName},
+		</if>
+		<if test="pubPath != null and pubPath !=''">
+		     t.PUB_PATH=#{pubPath},
+		</if>
+		<if test="editPath != null and editPath !=''">
+		     t.EDIT_PATH=#{editPath},
+		</if>
+		t.UPDATE_TIME=NOW()	  
+		WHERE t.CLASS_ID=#{classID}
+		AND   t.CONT_ID=#{contID}									    
+    </update>
+    
+    
+    <insert id="insertCallChat" parameterType="com.huafen.tablet.model.chat.CallChatDTO">
+       INSERT INTO t_call_service_chat(`ROOM_ID`,`MEETING_ID`,`USER_ID`,`CHAT_MSG`,`CHAT_STATE`,`CREATE_TIME`,`PART_TIME`)
+        VALUES(#{roomID},#{meetID},#{callUser.userID},#{chatMsg},#{state},UNIX_TIMESTAMP(NOW()),NOW())
+    </insert>
+    
+    <insert id="insertCallUser" parameterType="com.huafen.tablet.model.chat.CallUser">
+      INSERT INTO `t_call_service_user` ( `USER_ID`, `USER_NAME`, `CREATE_TIME`, `UPDATE_TIME`)
+       VALUES(#{userID}, #{userName}, NOW(), NOW());
+    </insert>    
+    
+    <insert id="insertCallRoom" parameterType="com.huafen.tablet.model.room.CallRoomDAO">
+       INSERT INTO t_call_service_room(`ROOM_ID`,`ROOM_NAME`,`ROOM_ADDR`,`FLOOR_ID`,`FLOOR`,`ROOM_IMG`,`SOURCE`,`RM_ORDER`,`CREATE_TIME`,`UPDATE_TIME`)
+        VALUES(#{roomID},#{roomName},#{roomAddr},#{floorID},#{floor},#{roomImg},#{source},#{order},NOW(),NOW())
+    </insert>
+    
+    <insert id="insertCallMTInfo" parameterType="com.huafen.tablet.model.room.CallMTInfoDAO">
+       INSERT INTO t_call_service_meet(`ROOM_ID`,`MEET_ID`,`MEET_NAME`,`MEET_CONTENT`,`NOTICES`,`MEET_APPLY`,`MEET_ADDR`,`MEET_TIME`,`CREATE_TIME`,`UPDATE_TIME`,`PART_TIME`)
+        VALUES(#{roomID},#{meetID},#{meetName},#{meetCont},#{notices},#{meetApply},#{meetAddr},#{meetTime},NOW(),NOW(),NOW())
+    </insert>
+    
+    
+    <insert id="insertIOTClass" parameterType="com.huafen.tablet.model.iot.IotRMClassDTO">
+				INSERT INTO `t_iot_room_classify` (
+					`ROOM_ID`,
+					`CLASS_ID`,
+					`CLASS_NAME`,
+					`CLASS_TYPE`,
+					`CLASS_AUTH`,
+					`CLASS_ORDER`,
+					`CREATE_TIME`,
+					`UPDATE_TIME`
+				)
+				VALUES
+					(
+					#{roomID},
+					#{classID},
+					#{className},
+					#{classType},
+					NULL,
+					0,
+					NOW(),
+					NOW()
+					)    
+    </insert>   
+    
+    <insert id="insertIOTConet" parameterType="com.huafen.tablet.model.iot.IotRMContDTO">
+			INSERT INTO `t_iot_room_content` (
+				`CLASS_ID`,
+				`CONT_ID`,
+				`CONT_NAME`,
+				`CONT_TYPE`,
+				`PUB_PATH`,
+				`EDIT_PATH`,
+				`CONT_ORDER`,
+				`CREATE_TIME`,
+				`UPDATE_TIME`
+			)
+			VALUES
+				(
+				#{classID},
+				#{contID},
+				#{contName},
+				#{contType},
+				#{pubPath},
+				#{editPath},
+			    0,
+				NOW(),
+				NOW()			    
+				)    
+    </insert>
+  
+    <delete id="deleteIOTMTInfo" parameterType="com.huafen.tablet.model.param.CallMTParam">
+         DELETE FROM t_call_service_room t WHERE t.ROOM_ID=#{roomID} AND t.SOURCE=#{source}
+    </delete>
+    
+    
+</mapper>

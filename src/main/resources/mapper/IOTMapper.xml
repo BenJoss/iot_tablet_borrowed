@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.huafen.tablet.mapper.IotMapper">
+
+<resultMap type="com.huafen.tablet.model.iot.IotDeviceDTO" id="iotContDevList">
+    <result property="contID" column="CONT_ID" />
+    <result property="deviceID" column="DEVICE_ID" />
+    <result property="deviceName" column="DEVICE_NAME" />
+    <result property="deviceType" column="DEVICE_TYPE" />
+    <result property="deviceModel" column="DEVICE_MODEL" />
+    <result property="updateTime" column="UPDATE_TIME" />
+</resultMap>
+
+<select id="queryIotContDevice" resultMap="iotContDevList" parameterType="com.huafen.tablet.model.param.IotDeviceParam">
+			SELECT
+				`CONT_ID`,
+				`DEVICE_ID`,
+				`DEVICE_NAME`,
+			CASE
+					DEVICE_TYPE 
+					WHEN '1' THEN
+					'移动' 
+					WHEN '2' THEN
+					'大屏' ELSE '其他' 
+				END DEVICE_TYPE,
+				`DEVICE_MODEL`,
+				`DEVICE_ORDER`,
+				DATE_FORMAT( `UPDATE_TIME`, '%Y-%m-%d %H:%i:%s' ) UPDATE_TIME 
+			FROM
+				t_iot_device t 
+			WHERE
+				1 =1
+			<if test = "contID != null and contID != ''">
+			    AND t.CONT_ID=#{contID}
+			</if>				
+</select>
+
+<select id="countRmClassNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.IotClassParam">
+            SELECT COUNT(1) FROM t_iot_room_classify t WHERE t.ROOM_ID=#{roomID}
+</select>
+
+<select id="countRmContNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.IotClassParam">
+	 SELECT
+		COUNT(1) 
+	FROM
+		t_iot_room_content t 
+	WHERE
+		t.CLASS_ID IN (
+		SELECT
+			a.CLASS_ID 
+		FROM
+			t_iot_room_classify a 
+		WHERE
+		a.ROOM_ID = #{roomID}
+		)           
+</select>    
+    
+<insert id="insertIotContDevice" parameterType="com.huafen.tablet.model.iot.IotDeviceDAO">
+	INSERT INTO `t_iot_device` (
+		`CONT_ID`,
+		`DEVICE_ID`,
+		`DEVICE_NAME`,
+		`DEVICE_TYPE`,
+		`DEVICE_MODEL`,
+		`DEVICE_ORDER`,
+		`CREATE_TIME`,
+		`UPDATE_TIME`
+	)
+	VALUES
+		(
+		#{contID},
+		#{deviceID},
+		#{deviceName},
+		#{deviceType},
+		#{deviceModel},
+		1,
+		NOW(),
+		NOW()
+		)
+</insert>
+
+
+<delete id="deleteIotDevice" parameterType="com.huafen.tablet.model.param.IotDeviceMdPara">
+     DELETE FROM t_iot_device WHERE 1=1
+     <if test = "deviceID != null and deviceID != ''">
+        AND  DEVICE_ID=#{deviceID}
+     </if>
+     <if test = "contID != null and contID != ''">
+        AND  CONT_ID=#{contID}
+     </if>
+     <if test = "classID != null and classID != ''">
+       AND  CONT_ID IN (SELECT CONT_ID FROM t_iot_room_content WHERE CLASS_ID =#{classID})
+     </if>    
+</delete>
+
+<delete id="deleteIotRmCont" parameterType="com.huafen.tablet.model.param.IotConParam">
+     DELETE FROM t_iot_room_content WHERE 1=1
+     <if test = "contID != null and contID != ''">
+        AND  CONT_ID=#{contID}
+     </if>
+     <if test = "classID != null and classID != ''">
+        AND  CLASS_ID=#{classID}
+     </if>     
+</delete>
+
+<delete id="deleteIotRmClass" parameterType="com.huafen.tablet.model.param.IotClassParam">
+   DELETE FROM t_iot_room_classify WHERE 1=1 
+      <if test = "roomID != null and roomID != ''">
+        AND  ROOM_ID=#{roomID}
+     </if>
+     <if test = "classID != null and classID != ''">
+        AND  CLASS_ID=#{classID}
+     </if>  
+</delete>
+
+</mapper>
