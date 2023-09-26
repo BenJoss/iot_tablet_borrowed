@@ -95,6 +95,6 @@ mqttprv:
 #会议预约系统接口配置
 mtcofig:
   orgUserAd: http://d-nari.sgepri.sgcc.com.cn:90/hr-org-service/sysUser/queryEmp
-  floorUrl: http://172.27.32.70:17010/api/meeting/sys-param-meta/query-sys-param-by-condition?group=FLOOR
-  roomUrl: http://172.27.32.70:17010/api/meeting/mt-meeting-room/query?pageIndex={pageIndex}&pageSize={pageSize}&roomNameOrAddr=&cap=&floorId={floorId}
-  mtinfoUrl: http://172.27.32.70:17010/api/meeting/statistics/?time={time}
+  floorUrl: http://172.28.5.134:17010/api/meeting/sys-param-meta/query-sys-param-by-condition?group=FLOOR
+  roomUrl: http://172.28.5.134:17010/api/meeting/mt-meeting-room/query?pageIndex={pageIndex}&pageSize={pageSize}&roomNameOrAddr=&cap=&floorId={floorId}
+  mtinfoUrl: http://172.28.5.134:17010/api/meeting/statistics/?time={time}

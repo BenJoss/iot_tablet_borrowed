@@ -12,14 +12,14 @@ public class PageBean<T> implements Serializable{
 	 */
 	private static final long serialVersionUID = 4120134091666547284L;
 	
-	private String source;
-	
-	@ApiModelProperty(value="楼层号",example = "1F")
-	private String floor;
-	@ApiModelProperty(value="会议室名称",example = "A2-310")
-	private String roomName;
-	@ApiModelProperty(value="会议室地址",example = "会议中心")
-	private String roomAddr;
+	@ApiModelProperty(value="借用时间 开始时间",required = true,example = "2023-09-14 08:30:00")
+	private String startTime;
+	@ApiModelProperty(value="借用时间 结束时间",required = true,example = "2023-09-14 10:30:00")
+	private String endTime;
+	@ApiModelProperty(value="借用人",required = false,example = "维康")
+	private String userName;
+	@ApiModelProperty(value="借用状态",example = "1：待借用、2：借用中、3：完结、4：异常、5：取消",required = false)
+	private String borrowedStatus;
 	
 	@ApiModelProperty(value="当前页数",example = "1")
     private int pageNum; //当前页数
@@ -47,6 +47,40 @@ public class PageBean<T> implements Serializable{
         this.start=(pageNum-1)*pageSize;
         this.end=this.start+pageSize;
     }
+
+    
+    
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getBorrowedStatus() {
+		return borrowedStatus;
+	}
+
+	public void setBorrowedStatus(String borrowedStatus) {
+		this.borrowedStatus = borrowedStatus;
+	}
 
 	public int getPageNum() {
 		return pageNum;
@@ -95,38 +129,6 @@ public class PageBean<T> implements Serializable{
 
 	public void setEnd(int end) {
 		this.end = end;
-	}
-
-	public String getSource() {
-		return source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
-	}
-
-	public String getFloor() {
-		return floor;
-	}
-
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-
-	public String getRoomName() {
-		return roomName;
-	}
-
-	public void setRoomName(String roomName) {
-		this.roomName = roomName;
-	}
-
-	public String getRoomAddr() {
-		return roomAddr;
-	}
-
-	public void setRoomAddr(String roomAddr) {
-		this.roomAddr = roomAddr;
 	}
 
 	public List<T> getData() {

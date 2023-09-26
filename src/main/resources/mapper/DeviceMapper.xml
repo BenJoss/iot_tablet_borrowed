@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.huafen.tablet.mapper.DeviceMapper">
+
+<resultMap type="com.huafen.tablet.model.apply.IotBrorroTabDTO" id="brorroNumMap">
+    <result property="allDayNum" column="all_day_num" />
+    <result property="mornDayNum" column="morn_day_num" />
+    <result property="afterDayNum" column="after_day_num" />
+</resultMap>
+
+	<select id="getTabletApplayNum" resultMap="brorroNumMap" parameterType="com.huafen.tablet.model.param.TabletApplayParam">
+	     SELECT
+	     
+			( SELECT
+				SUM( BORROW_NUM ) 
+			FROM
+				t_iot_device_borrow 
+			WHERE
+				ALLDAY_TIME = STR_TO_DATE( #{alldayTime}, "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS all_day_num,
+
+		   ( SELECT
+				SUM( BORROW_NUM ) 
+			FROM
+				t_iot_device_borrow 
+			WHERE
+				MORN_TIME = STR_TO_DATE( #{mornTime}, "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS morn_day_num,
+	
+			( SELECT
+				SUM( BORROW_NUM ) 
+			FROM
+				t_iot_device_borrow 
+			WHERE
+				AFTER_TIME = STR_TO_DATE( #{afterTime}, "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS after_day_num
+			
+		FROM DUAL
+	</select>
+
+    <insert id="insertIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotTablBorroDTO">
+			INSERT INTO `t_iot_device_borrow` (
+				`ROOM_ID`,
+				`MEET_ID`,
+				`VERIFY_CODE`,
+				`BORROW_NUM`,
+				`USER_ID`,
+				`USER_NAME`,
+				`BORROW_ORG`,
+				`CONNECT_WAY`,
+				`BORROWED_STATUS`,
+				<if test = "alldayTime != null and alldayTime != ''">
+				`ALLDAY_TIME`,
+				</if>
+				<if test = "mornTime != null and mornTime != ''">
+				`MORN_TIME`,
+				</if>
+				<if test = "afterTime != null and afterTime != ''">
+				`AFTER_TIME`,
+				</if>
+				`START_TIME`,
+				`END_TIME`,
+				`CREATE_TIME`,
+				`UPDATE_TIME`,
+				`BACK_COL1`,
+				`BACK_COL2`,
+				`BACK_COL3`,
+				`BACK_COL4`,
+				`BACK_COL5`,
+				`BACK_COL6` 
+			)
+			VALUES
+				(
+					#{roomID},
+					#{meetID},
+					#{verifyCode},
+					#{borrowNum},
+					#{userID},
+					#{userName},
+					#{borrowOrg},
+					#{connectWay},
+					#{borrowedStatus},
+					<if test = "alldayTime != null and alldayTime != ''">
+					str_to_date(#{alldayTime},'%Y-%m-%d %T'),
+					</if>
+					<if test = "mornTime != null and mornTime != ''">
+					str_to_date(#{mornTime},'%Y-%m-%d %T'),
+					</if>
+					<if test = "afterTime != null and afterTime != ''">
+					str_to_date(#{afterTime},'%Y-%m-%d %T'),
+					</if>
+					str_to_date(#{startTime},'%Y-%m-%d %T'),
+					str_to_date(#{endTime},'%Y-%m-%d %T'),
+					NOW(),
+					NOW(),
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+			        NULL 
+				)
+    </insert> 
+    
+    <insert id="insertIotOperLog" parameterType="com.huafen.tablet.model.apply.IotOperLogDTO">
+     INSERT INTO `t_iot_operate_log` (`OPERATE_ID`, `OPERATE_TYPE`, `OPERATE_CONT`, `CREATE_TIME`, `BACK_COL1`, `BACK_COL2`, `BACK_COL3`, `BACK_COL4`, `BACK_COL5`, `BACK_COL6` )
+		VALUES
+			( #{operateId}, #{operateType}, #{operateCont}, NOW(), NULL, NULL, NULL, NULL, NULL, NULL )   
+    </insert>
+
+</mapper>

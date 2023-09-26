@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import com.huafen.tablet.websocket.WebSocketServer;
@@ -13,10 +14,12 @@ import com.huafen.tablet.websocket.WebSocketServer;
 @SpringBootApplication
 @EnableKnife4j
 @EnableScheduling
+@EnableTransactionManagement
 public class TabletServiceApplication {
 
 	public static void main(String[] args) {
 
+		
         SpringApplication.run(TabletServiceApplication.class, args);
         
         String host;

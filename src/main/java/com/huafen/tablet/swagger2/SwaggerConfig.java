@@ -13,64 +13,62 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 @EnableSwagger2WebMvc
 public class SwaggerConfig{
     @Bean
+    public Docket applyDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("平板借还相关接口")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.apply"))//扫描的包路径
+                .build();
+    }
+    
+    @Bean
+    public Docket bindDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("平板绑定相关接口")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.bind"))//扫描的包路径
+                .build();
+    }
+    
+    @Bean
     public Docket hisDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("呼叫历史")
+                .groupName("平板借还历史接口")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.his"))//扫描的包路径
                 .build();
     }
     
     @Bean
-    public Docket msgSaveDocket() {
+    public Docket revertDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("呼叫保存")
+                .groupName("平板归还接口")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.save"))//扫描的包路径
-                .build();
-    }
-    
-    
-    @Bean
-    public Docket sendMsgDocket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("消息推送")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.send"))//扫描的包路径
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.revert"))//扫描的包路径
                 .build();
     }
     
     @Bean
-    public Docket iotDocket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("物联状态")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.iot"))//扫描的包路径
-                .build();
-    }
-    
-    
-    @Bean
-    public Docket authDocket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo()) 
-                .groupName("呼叫权限")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.auth"))//扫描的包路径
-                .build();
-    }
-    
-    @Bean
-    public Docket OrgServiceDocket() {
+    public Docket orgServiceDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo()) 
                 .groupName("组织中台信息")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.user"))//扫描的包路径
+                .build();
+    }
+    
+    @Bean
+    public Docket pushDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("平板借还信息推送相关接口")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.push"))//扫描的包路径
                 .build();
     }
     

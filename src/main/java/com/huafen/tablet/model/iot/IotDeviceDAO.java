@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-@ApiModel("首页会议室发布页绑定设备信息")
+@ApiModel("平板基本信息")
 public class IotDeviceDAO implements Serializable{
 
 	/**
