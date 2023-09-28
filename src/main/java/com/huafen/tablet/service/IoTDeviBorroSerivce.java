@@ -1,6 +1,7 @@
 package com.huafen.tablet.service;
 
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
+import com.huafen.tablet.model.apply.IotTableCancleDTO;
 
 public interface IoTDeviBorroSerivce {
 
@@ -10,5 +11,7 @@ public interface IoTDeviBorroSerivce {
 	public void saveApplyTabletInfoSerivce(IotTablBorroDTO iotTablBorroDTO);
 	
 	public boolean  applyALLOfDayTabletSerivce(IotTablBorroDTO iotTablBorroDTO);
+	
+	public  boolean cancelApplyTabletInfo(IotTableCancleDTO iotTableCancleDTO);
 
 }

@@ -16,6 +16,7 @@ import com.huafen.tablet.mapper.DeviceMapper;
 import com.huafen.tablet.model.apply.IotBrorroTabDTO;
 import com.huafen.tablet.model.apply.IotOperLogDTO;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
+import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.config.RedisProperties;
 import com.huafen.tablet.model.param.TabletApplayParam;
 import com.huafen.tablet.msg.DeviceException;
@@ -271,6 +272,28 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			if (null != lock) {
 				distributedLock.unLock(lock);
 			}
+		}
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED ,rollbackFor = Exception.class)
+	public boolean cancelApplyTabletInfo(IotTableCancleDTO iotTableCancleDTO) {
+		try {
+			 int bindNum = iotTableCancleDTO.getBorrowNum();
+			 String verifyCode = iotTableCancleDTO.getVerifyCode();
+			 iotTableCancleDTO.setBorrowNum(0);
+			 deviceMapper.updateCancelIotTablBorro(iotTableCancleDTO);
+			 IotOperLogDTO iotOperLogDTO = new IotOperLogDTO();
+			 iotOperLogDTO.setOperateId(verifyCode);
+			 iotOperLogDTO.setOperateType("1");
+			 iotOperLogDTO.setOperateCont("取消申请的"+bindNum+"平板");
+			 deviceMapper.insertIotOperLog(iotOperLogDTO);
+			return true;
+		} catch (Exception e) {
+			logger.error("异常", e.getMessage());
+			DeviceException exception = new DeviceException();
+			exception.setMsg(e.getMessage());
+			throw exception;
 		}
 	}
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.huafen.tablet.config.RepCode;
 import com.huafen.tablet.model.apply.IotDeviReturnDTO;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
+import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.chat.CallRmStatDTO;
 import com.huafen.tablet.model.param.IotBabletMntParam;
 import com.huafen.tablet.model.req.RepDTO;
@@ -88,6 +89,25 @@ public class IoTDeviBorroCrtl {
 		 ;
     	return repDTO;
     }
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "取消申请", notes = "取消申请记录")
+    @PostMapping("/cancelTablet")
+    @ResponseBody
+    public RepDTO cancelTablet(@RequestBody IotTableCancleDTO iotTableCancleDTO) {
+		RepDTO repDTO = new RepDTO();
+		try {
+			if (ioTDeviBorroSerivce.cancelApplyTabletInfo(iotTableCancleDTO)) {
+				repDTO.setRepCode(RepCode.SUCCESS_CODE);
+			}
+		} catch (DeviceException e) {
+			repDTO.setRepCode(RepCode.ERROR_CODE);
+			repDTO.setRepMsg(e.getMessage());
+		}
+		return repDTO;
+	}
 	
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = RepDTO.class),

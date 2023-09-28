@@ -9,6 +9,7 @@ import com.huafen.tablet.model.apply.IotBrorroTabDTO;
 import com.huafen.tablet.model.apply.IotOperLogDTO;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
 import com.huafen.tablet.model.apply.IotTablBorroHisDTO;
+import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.iot.IotTabletDTO;
 import com.huafen.tablet.model.param.TabletApplayParam;
 import com.huafen.tablet.model.param.TabletRevertParam;
@@ -29,4 +30,6 @@ public interface DeviceMapper {
 	List<IotTabletDTO> queryIotTabletInfo(TabletRevertParam tabletRevertParam);
 	
 	int updateIotTablBorro(IotBindTabAllDTO iotBindTabAllDTO);
+	
+	int updateCancelIotTablBorro(IotTableCancleDTO iotTableCancleDTO);
 }

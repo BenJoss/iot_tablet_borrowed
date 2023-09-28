@@ -170,6 +170,17 @@
 			</set> 
 			where verify_code = #{verifyCode}
     </update>
+    
+    <update id="updateCancelIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotTableCancleDTO">
+    		update t_iot_device_borrow 
+			<set>
+			  borrow_num = #{borrowNum}
+			</set> 
+			where verify_code = #{verifyCode}
+			<if test = "userID != null and userID != ''">
+			   and user_id = #{userID}
+			</if>
+    </update>
 
 	    
 </mapper>
