@@ -78,15 +78,11 @@ mqtt:
   timeout: 1000
   #设置会话心跳时间
   keepalive: 100
-  defaultTopic: A2-227/227-wendu:A2-227/227-shidu:A2-228/228-power
+  defaultTopic: A2-206/206-RFID-UP
   dmqInfo:
-         -/227-wendu
-         -/227-shidu
-         -/227-power
+         -/206-RFID-UP
   isOpen: true
   qos: 
-     - 2
-     - 2
      - 2
 mqttprv:
   hostUrl: tcp://172.27.35.3:1883
@@ -99,12 +95,10 @@ mqttprv:
   timeout: 1000
   #设置会话心跳时间
   keepalive: 100
-  defaultTopic: A2-228/228-power:A2-227/227-shidu
+  defaultTopic: A2-206/206-RFID-UP
   dmqInfo:
-         -/228-power
-         -/227-shidu
+         -/206-RFID-UP
   qos: 
-     - 2
      - 2
 #会议预约系统接口配置
 mtcofig:

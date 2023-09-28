@@ -1,16 +1,19 @@
 package com.huafen.tablet.mqtt;
 
 import java.io.UnsupportedEncodingException;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.huafen.tablet.model.apply.IotBorroFlowDTO;
 import com.huafen.tablet.model.config.MqttProperties;
-import com.huafen.tablet.util.CallCacheUtil;
+import com.huafen.tablet.service.impl.RedisQueueService;
 
 
 @Component
@@ -24,30 +27,36 @@ public class MqttAcceptCallback implements MqttCallbackExtended{
     @Autowired
     private MqttProperties mqttProperties;
     
+	@Autowired
+	@Qualifier("redisQueueService")
+	private RedisQueueService redisQueueService;
+	
 	@Override
 	public void connectionLost(Throwable cause) {
-		log.info("【MQTT-消费端】连接断开，可以做重连");
-        if (MqttAcceptClient.getMqttClient() == null || !MqttAcceptClient.getMqttClient().isConnected()) {
-            log.info("【MQTT-消费端】emqx重新连接....................................................");
-            mqttAcceptClient.reconnection();
-        }
+		log.info("【MQTT-消费端】连接断开：" + cause.getMessage());
+        int reConnectNum = 0;
+        while (reConnectNum <= 3) {
+        	if (MqttAcceptClient.getMqttClient() == null || !MqttAcceptClient.getMqttClient().isConnected()) {
+                log.info("【MQTT-消费端】emqx重新连接....................................................");
+                mqttAcceptClient.reconnection();
+            }else {
+            	return;
+            }
+        	reConnectNum++;
+		}
 	}
     /**
-               * 客户端收到消息触发
+     * 客户端收到消息触发
      * @param topic       主题
      * @param mqttMessage 消息
      */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		  String msg = new String(message.getPayload());
-		
-		/*
-		 * System.out.println("【MQTT-消费端】接收消息主题 : " + topic);
-		 * System.out.println("【MQTT-消费端】接收消息Qos : " + message.getQos());
-		 * System.out.println("【MQTT-消费端】接收消息内容 : " + msg);
-		 */
-		 
-		  CallCacheUtil.getInstance().put(topic, msg);
+		  String tabletID = new String(message.getPayload());
+		  IotBorroFlowDTO iotBorroFlowDTO = new IotBorroFlowDTO();
+		  iotBorroFlowDTO.setTopic(topic);
+		  iotBorroFlowDTO.setTabletID(tabletID);
+		  redisQueueService.msgBorrotProduce(iotBorroFlowDTO);
 	}
 
 	@Override

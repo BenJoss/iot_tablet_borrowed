@@ -10,4 +10,5 @@ public interface IoTDeviBorroSerivce {
 	public void saveApplyTabletInfoSerivce(IotTablBorroDTO iotTablBorroDTO);
 	
 	public boolean  applyALLOfDayTabletSerivce(IotTablBorroDTO iotTablBorroDTO);
+
 }

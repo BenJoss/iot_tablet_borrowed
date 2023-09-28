@@ -28,11 +28,17 @@ public class MqttProviderCallBack implements MqttCallback {
      */
     @Override
     public void connectionLost(Throwable throwable) {
-        System.out.println(mqttProperties.getClientId() + " 与服务器断开连接");
-        if (MqttProviderConfig.getMqttClient() == null || !MqttProviderConfig.getMqttClient().isConnected()) {
-            log.info("【MQTT-生产端】emqx重新连接....................................................");
-            providerClient.reconnection();
-        }
+    	 System.out.println(mqttProperties.getClientId() + " 与服务器断开连接");
+         int reConnectNum = 0;
+         while (reConnectNum <= 3) {
+         	if (MqttProviderConfig.getMqttClient() == null || !MqttProviderConfig.getMqttClient().isConnected()) {
+                 log.info("【MQTT-生产端】emqx重新连接....................................................");
+                 providerClient.reconnection();
+             }else {
+             	return;
+             }
+         	reConnectNum++;
+         }
     }
 
     /**

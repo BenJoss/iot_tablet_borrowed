@@ -15,6 +15,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.huafen.tablet.config.RepCode;
@@ -31,11 +33,13 @@ import com.huafen.tablet.model.room.CallMTInfoDAO;
 import com.huafen.tablet.model.room.CallRoomDAO;
 import com.huafen.tablet.service.CallIotService;
 import com.huafen.tablet.service.CallRoomService;
+import com.huafen.tablet.service.IoTDeviceBindSerivce;
 import com.huafen.tablet.service.ShowCallMsgService;
 import com.huafen.tablet.util.CallRMUtil;
 import com.huafen.tablet.util.DateUtil;
 
-public class CallServiceTask {
+@Component
+public class DeviceServiceTask {
 
 	private static ReentrantLock lock = new ReentrantLock();
 
@@ -55,11 +59,14 @@ public class CallServiceTask {
 	@Qualifier("showCallMsgService")
 	private ShowCallMsgService showCallMsgService ;
 	
+	@Autowired
+	@Qualifier("ioTDeviceBindSerivce")
+	private IoTDeviceBindSerivce ioTDeviceBindSerivce;
 	
 	@Autowired
 	private MTConfig mtConfig;
 	
-	private static final Logger log = org.slf4j.LoggerFactory.getLogger(CallServiceTask.class);
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(DeviceServiceTask.class);
 
 	public void syncMeetRoomInfoTask() {
 		try {
@@ -211,6 +218,20 @@ public class CallServiceTask {
 		}
 	}
 
+
+	@Scheduled(cron = "*/5 * * * * *")
+	public void sendTopic() {
+		try {
+			lock.lock();
+			ioTDeviceBindSerivce.loadDeviceInfo();
+		}catch (Exception e) {
+
+		} finally {
+			lock.unlock();
+		}
+		
+	}
+	
 	
 	
 	

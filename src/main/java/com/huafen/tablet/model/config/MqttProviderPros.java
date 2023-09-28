@@ -3,6 +3,8 @@ package com.huafen.tablet.model.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import com.huafen.tablet.util.RandUtil;
+
 @Component
 @ConfigurationProperties(prefix = "mqttprv")
 public class MqttProviderPros {
@@ -77,7 +79,7 @@ public class MqttProviderPros {
 		return clientId;
 	}
 	public void setClientId(String clientId) {
-		this.clientId = clientId;
+		this.clientId = clientId + RandUtil.generateRandomString();
 	}
 	public String getDefaultTopic() {
 		return defaultTopic;

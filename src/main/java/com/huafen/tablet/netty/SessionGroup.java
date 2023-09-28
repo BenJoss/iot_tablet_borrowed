@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.alibaba.fastjson.JSON;
 import com.huafen.tablet.model.chat.CallChatDTO;
 import com.huafen.tablet.model.chat.CallMsgDTO;
-import com.huafen.tablet.queue.CallQueue;
 import com.huafen.tablet.util.DateUtil;
 
 import io.netty.channel.Channel;
@@ -69,7 +68,6 @@ public final class SessionGroup {
 	        String json = JSON.toJSONString(callMsgDTO);
 	        ChannelGroupFuture future = group.writeAndFlush(new TextWebSocketFrame(json));
 	        future.addListener(f -> {
-	        	CallQueue.getCallQueue().produce(callChat);
 	            System.out.println("完成发送："+json);
 	 
 	        });

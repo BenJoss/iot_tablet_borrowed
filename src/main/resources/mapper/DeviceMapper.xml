@@ -11,6 +11,25 @@
     <result property="afterDayNum" column="after_day_num" />
 </resultMap>
 
+<resultMap type="com.huafen.tablet.model.apply.IotTablBorroHisDTO" id="borroHisMap">
+    <result property="roomName" column="ROOM_NAME" />
+    <result property="meetName" column="MEET_NAME" />
+    <result property="userName" column="USER_NAME" />
+    <result property="borrowNum" column="BORROW_NUM" />
+    <result property="borrowTime" column="BORROW_TIME" />
+</resultMap>
+
+<resultMap type="com.huafen.tablet.model.iot.IotTabletDTO" id="iotTabletMap">
+    <result property="tabletID" column="TABLET_ID" />
+    <result property="tabletName" column="TABLET_NAME" />
+    <result property="tabletModel" column="TABLET_MODEL" />
+    <result property="tabletBrand" column="TABLET_BRAND" />
+    <result property="tabletIP" column="TABLET_IP" />
+    <result property="tabletPort" column="TABLET_PORT" />
+    <result property="tabletState" column="TABLET_STATE" />
+    <result property="borrowedStatus" column="BORROWED_STATUS" />
+</resultMap>
+
 	<select id="getTabletApplayNum" resultMap="brorroNumMap" parameterType="com.huafen.tablet.model.param.TabletApplayParam">
 	     SELECT
 	     
@@ -38,6 +57,41 @@
 		FROM DUAL
 	</select>
 
+    <select id="countBorrowNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+               SELECT COUNT(1) FROM t_iot_device_borrow t WHERE t.VERIFY_CODE=#{verifyCode}
+    </select>
+    
+    <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+               SELECT
+					ROOM_ID AS ROOM_NAME ,
+					MEET_ID AS MEET_NAME,
+					VERIFY_CODE,
+					BORROW_NUM,
+					USER_NAME,
+					date_format(START_TIME,'%Y-%m-%d %T') AS BORROW_TIME
+				FROM
+					t_iot_device_borrow t 
+				WHERE
+					t.VERIFY_CODE=#{verifyCode}
+					ORDER BY CREATE_TIME DESC
+					LIMIT 1
+    </select>
+    
+    <select id="queryIotTabletInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+			SELECT
+				`TABLET_ID`,
+				`TABLET_NAME`,
+				`TABLET_MODEL`,
+				`TABLET_BRAND`,
+				`TABLET_IP`,
+				`TABLET_PORT`,
+				`TABLET_STATE`,
+				`BORROWED_STATUS` 
+			FROM
+				`t_iot_tablet_info` t
+				ORDER BY t.CREATE_TIME DESC
+    </select>
+    
     <insert id="insertIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotTablBorroDTO">
 			INSERT INTO `t_iot_device_borrow` (
 				`ROOM_ID`,
@@ -107,5 +161,15 @@
 		VALUES
 			( #{operateId}, #{operateType}, #{operateCont}, NOW(), NULL, NULL, NULL, NULL, NULL, NULL )   
     </insert>
+    
+    
+    <update id="updateIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotBindTabAllDTO">
+			update t_iot_device_borrow 
+			<set>
+			  borrow_num = #{bindNum}
+			</set> 
+			where verify_code = #{verifyCode}
+    </update>
 
+	    
 </mapper>
