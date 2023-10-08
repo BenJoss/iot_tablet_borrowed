@@ -1,5 +1,6 @@
 package com.huafen.tablet.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -12,13 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.huafen.tablet.config.RepCode;
 import com.huafen.tablet.mapper.DeviceMapper;
 import com.huafen.tablet.model.apply.IotBrorroTabDTO;
 import com.huafen.tablet.model.apply.IotOperLogDTO;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
+import com.huafen.tablet.model.apply.IotTablBorroHisDTO;
 import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.config.RedisProperties;
+import com.huafen.tablet.model.param.TabletApCoParam;
 import com.huafen.tablet.model.param.TabletApplayParam;
+import com.huafen.tablet.model.req.RepDTO;
 import com.huafen.tablet.msg.DeviceException;
 import com.huafen.tablet.service.IDistributedLock;
 import com.huafen.tablet.service.IoTDeviBorroSerivce;
@@ -295,6 +300,21 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			exception.setMsg(e.getMessage());
 			throw exception;
 		}
+	}
+
+	@Override
+	public RepDTO queryBorrowVerifyCode(TabletApCoParam tabletApCoParam) {
+		RepDTO  repDTO = new RepDTO();
+		try {
+			 List<IotTablBorroHisDTO> iotTablBorroHisList = deviceMapper.queryBorrowVerifyCode(tabletApCoParam);
+			 repDTO.setRepCode(RepCode.SUCCESS_CODE);
+			 repDTO.setResult(iotTablBorroHisList);
+		} catch (Exception e) {
+			logger.error("异常", e.getMessage());
+			repDTO.setRepCode(RepCode.ERROR_CODE);
+			repDTO.setRepMsg(e.getMessage());
+		}
+		return repDTO;
 	}
 
 	

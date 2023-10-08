@@ -18,6 +18,8 @@ public class IotBindTabletDTO implements Serializable{
 	private String tabletName;
 	@ApiModelProperty(value="平板状态",example = "1：启用、2：禁用")
 	private String tabletState;
+	@ApiModelProperty(value="借还验证码",example = "8484")
+	private String verifyCode;
 	
 	public String getTabletID() {
 		return tabletID;
@@ -36,6 +38,12 @@ public class IotBindTabletDTO implements Serializable{
 	}
 	public void setTabletState(String tabletState) {
 		this.tabletState = tabletState;
+	}
+	public String getVerifyCode() {
+		return verifyCode;
+	}
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
 	}
 	
 	

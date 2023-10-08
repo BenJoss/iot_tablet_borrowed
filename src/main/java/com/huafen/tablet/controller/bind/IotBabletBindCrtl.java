@@ -48,6 +48,16 @@ public class IotBabletBindCrtl {
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
 			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "校验借还验证码信息")
+    @PostMapping("/checkBindInfo")
+    @ResponseBody
+    public RepDTO checkBindInfo(@RequestBody TabletRevertParam tabletRevertParam){
+		return ioTDeviceBindSerivce.checkBindInfoSerivce(tabletRevertParam);
+    }
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
     @ApiOperation(value = "启动借取流程")
     @PostMapping("/startBindBorroFlow")
     @ResponseBody

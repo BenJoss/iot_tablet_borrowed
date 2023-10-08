@@ -1,5 +1,7 @@
 package com.huafen.tablet.util;
 
+import java.util.UUID;
+
 public class IoTDevUtil {
 
 
@@ -13,6 +15,14 @@ public class IoTDevUtil {
 	public final static String  FINISH_BORROWED="3";
 	
 	public final static String  EXCEPTION_BORROWED="4";
+	/**
+	 * 平板借用状态：1：使用中、2：空闲
+	 */
+	public final static String  USEING_STATUS="1";
+	/**
+	 * 平板借用状态：1：使用中、2：空闲
+	 */
+	public final static String  IDLE_STATE="2";
 	
 	public final static String  CANCEL_BORROWED="5";
 	
@@ -37,4 +47,24 @@ public class IoTDevUtil {
 	public final static Integer TABLET_SUM = 30;
 	
 	public final static String[] arr = new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+	
+	public final static String  RETURN_TOKEN="RETURN_TOKEN";
+	
+	public final static String  BORRO_TOKEN="BORRO_TOKEN";
+	
+	public final static String  IOTDEV_RESULT="data";
+	
+   /** 
+    * @Description: 创建Token，怕麻烦的可以直接生成UUID作为toekn的key和value 
+    * @Date: 2020/1/8 0008 
+    */ 
+    public static String getToken(){
+        String token_value = UUID.randomUUID().toString().replace("-","");
+        try {
+            return token_value;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
 }

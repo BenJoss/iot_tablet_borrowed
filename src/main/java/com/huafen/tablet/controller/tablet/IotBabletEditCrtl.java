@@ -1,8 +1,7 @@
 package com.huafen.tablet.controller.tablet;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.huafen.tablet.model.iot.IotEditTabletDTO;
 import com.huafen.tablet.model.iot.IotSaveTabletDTO;
-import com.huafen.tablet.model.iot.IotTabletDTO;
 import com.huafen.tablet.model.param.TabletMageParam;
 import com.huafen.tablet.model.req.RepDTO;
+import com.huafen.tablet.service.IotBabletEditService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,15 +24,19 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/IotBabletEditCrtl")
 public class IotBabletEditCrtl {
 
+	@Autowired
+	@Qualifier("iotBabletEditService")
+	private IotBabletEditService iotBabletEditService;
+	
+	
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
 			@ApiResponse(code = 1001, message = "error")})
     @ApiOperation(value = "平板编辑信息查询")
     @PostMapping("/queryMageBablet")
     @ResponseBody
-    public List<IotTabletDTO> queryMageBablet(@RequestBody TabletMageParam tabletMageParam){
-		List<IotTabletDTO> repDTO = new ArrayList<IotTabletDTO>();
-    	return repDTO;
+    public RepDTO queryMageBablet(@RequestBody TabletMageParam tabletMageParam){
+    	return iotBabletEditService.queryMageBabletSerivce(tabletMageParam);
     }
 	
 	@ApiResponses( value = { 
@@ -43,8 +46,7 @@ public class IotBabletEditCrtl {
     @PostMapping("/editBablet")
     @ResponseBody
     public RepDTO editBablet(@RequestBody IotEditTabletDTO iotEditTabletDTO){
-		RepDTO repDTO = new RepDTO();
-    	return repDTO;
+    	return iotBabletEditService.editBabletSerivce(iotEditTabletDTO);
     }
 	
 	@ApiResponses( value = { 
@@ -54,7 +56,6 @@ public class IotBabletEditCrtl {
     @PostMapping("/saveBablet")
     @ResponseBody
     public RepDTO saveBablet(@RequestBody IotSaveTabletDTO iotSaveTabletDTO){
-		RepDTO repDTO = new RepDTO();
-    	return repDTO;
+    	return iotBabletEditService.saveBabletSerivce(iotSaveTabletDTO);
     }
 }

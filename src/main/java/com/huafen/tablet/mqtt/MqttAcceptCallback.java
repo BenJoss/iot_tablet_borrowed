@@ -54,9 +54,9 @@ public class MqttAcceptCallback implements MqttCallbackExtended{
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		  String tabletID = new String(message.getPayload());
 		  IotBorroFlowDTO iotBorroFlowDTO = new IotBorroFlowDTO();
-		  iotBorroFlowDTO.setTopic(topic);
 		  iotBorroFlowDTO.setTabletID(tabletID);
 		  redisQueueService.msgBorrotProduce(iotBorroFlowDTO);
+		  redisQueueService.msgReturnProduce(iotBorroFlowDTO);
 	}
 
 	@Override

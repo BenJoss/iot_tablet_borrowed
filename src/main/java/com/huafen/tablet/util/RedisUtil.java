@@ -16,5 +16,7 @@ public class RedisUtil {
 	
 	public static final  long ATOMIC_KEY_TIME_OUT = 600L;
 	
-	 public static final String  MQTT_TABLET_REDIS_QUEUE = "MQTT_TABLET_REDIS_QUEUE";
+	public static final String  MQTT_TABLET_REDIS_QUEUE = "MQTT_TABLET_REDIS_QUEUE";
+	
+	public static final String  MQTT_TABLET_REDIS_RETRUN_QUEUE = "MQTT_TABLET_REDIS_RETRUN_QUEUE";
 }

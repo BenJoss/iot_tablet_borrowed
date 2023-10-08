@@ -16,7 +16,7 @@ public class SwaggerConfig{
     public Docket applyDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("平板借还相关接口")
+                .groupName("平板申请相关接口")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.apply"))//扫描的包路径
                 .build();
@@ -26,7 +26,7 @@ public class SwaggerConfig{
     public Docket bindDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("平板绑定相关接口")
+                .groupName("平板借用相关接口")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.bind"))//扫描的包路径
                 .build();
@@ -66,9 +66,9 @@ public class SwaggerConfig{
     public Docket pushDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("平板借还信息推送相关接口")
+                .groupName("平板信息维护相关接口")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.push"))//扫描的包路径
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.tablet"))//扫描的包路径
                 .build();
     }
     

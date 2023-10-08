@@ -19,7 +19,8 @@ public class TabletMageParam implements Serializable{
 	private String tabletState;
 	@ApiModelProperty(value="平板借用状态",example = "1：使用中、2：空闲",required = false)
 	private String borrowedStatus;
-	
+	@ApiModelProperty(value="借还验证码",example = "8484")
+	private String verifyCode;
 	public String getTabletName() {
 		return tabletName;
 	}
@@ -37,6 +38,12 @@ public class TabletMageParam implements Serializable{
 	}
 	public void setBorrowedStatus(String borrowedStatus) {
 		this.borrowedStatus = borrowedStatus;
+	}
+	public String getVerifyCode() {
+		return verifyCode;
+	}
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
 	}
 	
 	

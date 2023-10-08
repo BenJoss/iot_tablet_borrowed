@@ -12,7 +12,8 @@ public class IotEditTabletDTO implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -3352828408557139979L;
-	
+	@ApiModelProperty(value="平板ID",example = "E280689400004020F535A17F",required = true)
+	private String tabletID;
 	@ApiModelProperty(value="平板名称",example = "平板01",required = false)
 	private String tabletName;
 	@ApiModelProperty(value="平板型号",example = "A2764",required = false)
@@ -23,7 +24,15 @@ public class IotEditTabletDTO implements Serializable{
 	private String tabletIP;
 	@ApiModelProperty(value="平板端口",example = "17000",required = false)
 	private String tabletPort;
+	@ApiModelProperty(value="平板状态",example = "1：启用、2：禁用")
+	private String tabletState;
 	
+	public String getTabletID() {
+		return tabletID;
+	}
+	public void setTabletID(String tabletID) {
+		this.tabletID = tabletID;
+	}
 	public String getTabletName() {
 		return tabletName;
 	}
@@ -53,6 +62,12 @@ public class IotEditTabletDTO implements Serializable{
 	}
 	public void setTabletPort(String tabletPort) {
 		this.tabletPort = tabletPort;
+	}
+	public String getTabletState() {
+		return tabletState;
+	}
+	public void setTabletState(String tabletState) {
+		this.tabletState = tabletState;
 	}
 
 	

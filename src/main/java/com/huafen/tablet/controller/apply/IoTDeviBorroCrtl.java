@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.huafen.tablet.config.RepCode;
-import com.huafen.tablet.model.apply.IotDeviReturnDTO;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
 import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.chat.CallRmStatDTO;
 import com.huafen.tablet.model.param.IotBabletMntParam;
+import com.huafen.tablet.model.param.TabletApCoParam;
 import com.huafen.tablet.model.req.RepDTO;
 import com.huafen.tablet.msg.DeviceException;
 import com.huafen.tablet.service.IoTDeviBorroSerivce;
@@ -109,15 +109,15 @@ public class IoTDeviBorroCrtl {
 		return repDTO;
 	}
 	
+	
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
 			@ApiResponse(code = 1001, message = "error")})
-    @ApiOperation(value = "借用平板归还", notes = "新增平板借用归还记录")
-    @PostMapping("/returnTablet")
+    @ApiOperation(value = "根据工号查询借还码信息")
+    @PostMapping("/queryBorrowVerifyCode")
     @ResponseBody
-    public RepDTO returnTablet(@RequestBody IotDeviReturnDTO iotDeviReturnDTO){
-		RepDTO repDTO = new RepDTO();
-    	return repDTO;
+    public RepDTO queryBorrowVerifyCode(@RequestBody TabletApCoParam tabletApCoParam){
+		return ioTDeviBorroSerivce.queryBorrowVerifyCode(tabletApCoParam);
     }
 	
 	@ApiResponses( value = { 

@@ -15,12 +15,17 @@ public class IotBindTabAllDTO implements Serializable{
 	private static final long serialVersionUID = -8950319244625073362L;
 	@ApiModelProperty(value="借还验证码",required = true,example = "8484")
 	private String verifyCode;
+	
 	@ApiModelProperty(value="扫描设备topic",required = true,example = "A2-206/206-RFID-UP")
 	private String topic;
+	
 	@ApiModelProperty(value="取出平板信息",required = true,example = "list")
 	private List<IotBindTabletDTO> iotBindTabletList;
 	
-	private int bindNum;
+	@ApiModelProperty(value="借用状态",example = "1：待借用、2：借用中、3：完结、4：异常、5：取消",required = false)
+	private String borrowedStatus;
+	
+	private Integer bindNum;
 	
 	public String getVerifyCode() {
 		return verifyCode;
@@ -41,11 +46,18 @@ public class IotBindTabAllDTO implements Serializable{
 	public void setIotBindTabletList(List<IotBindTabletDTO> iotBindTabletList) {
 		this.iotBindTabletList = iotBindTabletList;
 	}
-	public int getBindNum() {
+	
+	public Integer getBindNum() {
 		return bindNum;
 	}
-	public void setBindNum(int bindNum) {
+	public void setBindNum(Integer bindNum) {
 		this.bindNum = bindNum;
+	}
+	public String getBorrowedStatus() {
+		return borrowedStatus;
+	}
+	public void setBorrowedStatus(String borrowedStatus) {
+		this.borrowedStatus = borrowedStatus;
 	}
 	
 }

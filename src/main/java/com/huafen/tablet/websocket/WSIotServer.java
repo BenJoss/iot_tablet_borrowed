@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
-@ServerEndpoint("/websocket/{topic}/{topicInfo}")  
+@ServerEndpoint("/websocket/{topicID}")  
 public class WSIotServer {
 	
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(WSIotServer.class);
@@ -32,10 +32,10 @@ public class WSIotServer {
      * 链接成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam(value="topic")String topic, @PathParam(value="topicInfo")String topicInfo) {
+    public void onOpen(Session session, @PathParam(value="topicID")String topicID) {
         try {
             this.session = session;
-            this.userId = topic +"/"+ topicInfo ;
+            this.userId = topicID;
             webSockets.add(this);
             sessionPool.put(userId, session);
             log.info("【websocket消息】有新的连接，总数为:"+webSockets.size());

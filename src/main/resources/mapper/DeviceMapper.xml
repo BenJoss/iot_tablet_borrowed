@@ -61,7 +61,15 @@
                SELECT COUNT(1) FROM t_iot_device_borrow t WHERE t.VERIFY_CODE=#{verifyCode}
     </select>
     
-    <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+    <select id="countReturnNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+               SELECT SUM(RETURN_NUM) FROM t_iot_device_return t WHERE t.VERIFY_CODE=#{verifyCode}
+    </select>    
+    
+    <select id="countTabletNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.IotEditTabletParam">
+               SELECT COUNT(1) FROM t_iot_tablet_info t WHERE t.TABLET_ID=#{tabletID}
+    </select>    
+    
+    <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletApCoParam">
                SELECT
 					ROOM_ID AS ROOM_NAME ,
 					MEET_ID AS MEET_NAME,
@@ -75,6 +83,23 @@
 					t.VERIFY_CODE=#{verifyCode}
 					ORDER BY CREATE_TIME DESC
 					LIMIT 1
+    </select>
+    
+    <select id="queryBorrowVerifyCode" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletApCoParam">
+                SELECT
+					ROOM_ID AS ROOM_NAME ,
+					MEET_ID AS MEET_NAME,
+					VERIFY_CODE,
+					BORROW_NUM,
+					USER_NAME,
+					date_format(START_TIME,'%Y-%m-%d %T') AS BORROW_TIME
+				FROM
+					t_iot_device_borrow t 
+				WHERE 1=1
+				<if test = "userID != null and userID != ''">
+				   t.USER_ID=#{userID}
+				</if>	
+					ORDER BY CREATE_TIME DESC
     </select>
     
     <select id="queryIotTabletInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
@@ -91,6 +116,34 @@
 				`t_iot_tablet_info` t
 				ORDER BY t.CREATE_TIME DESC
     </select>
+    
+    <select id="queryIotEditTabletInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletMageParam">
+			SELECT
+				`TABLET_ID`,
+				`TABLET_NAME`,
+				`TABLET_MODEL`,
+				`TABLET_BRAND`,
+				`TABLET_IP`,
+				`TABLET_PORT`,
+				`TABLET_STATE`,
+				`BORROWED_STATUS` 
+			FROM
+				`t_iot_tablet_info` t
+				where 1=1
+				<if test = "tabletName != null and tabletName != ''">
+				  AND t.TABLET_NAME LIKE CONCAT('%',#{tabletName},'%')
+				</if>
+				<if test = "tabletState != null and tabletState != ''">
+				  AND t.TABLET_STATE = #{tabletState}
+				</if>
+				<if test = "borrowedStatus != null and borrowedStatus != ''">
+				  AND t.BORROWED_STATUS = #{borrowedStatus}
+				</if>
+				<if test = "verifyCode != null and verifyCode != ''">
+				  AND t.VERIFY_CODE = #{verifyCode}
+				</if>												
+				ORDER BY t.CREATE_TIME DESC
+    </select>    
     
     <insert id="insertIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotTablBorroDTO">
 			INSERT INTO `t_iot_device_borrow` (
@@ -162,11 +215,64 @@
 			( #{operateId}, #{operateType}, #{operateCont}, NOW(), NULL, NULL, NULL, NULL, NULL, NULL )   
     </insert>
     
+    <insert id="insertDeviceReturn" parameterType="com.huafen.tablet.model.apply.IotDeviReturnDTO">
+		INSERT INTO `t_iot_device_return` (  `VERIFY_CODE`, `RETURN_NUM`, `RETURN_TIME`, `CREATE_TIME`, `UPDATE_TIME`, `BACK_COL1`, `BACK_COL2`, `BACK_COL3`, `BACK_COL4`, `BACK_COL5`, `BACK_COL6` )
+		VALUES
+			(#{verifyCode}, #{returnNum}, now(), now(), now(), NULL, NULL, NULL, NULL, NULL, NULL )    
+    </insert>
+    
+    <insert id="insertIotTabletInfo" parameterType="com.huafen.tablet.model.iot.IotSaveTabletDTO">
+		 INSERT INTO `t_iot_tablet_info` (
+			`TABLET_ID`,
+			`TABLET_NAME`,
+			`TABLET_MODEL`,
+			`TABLET_BRAND`,
+			`TABLET_IP`,
+			`TABLET_PORT`,
+			`TABLET_STATE`,
+			`BORROWED_STATUS`,
+			`TABLET_ORDER`,
+			`CREATE_TIME`,
+			`UPDATE_TIME`,
+			`BACK_COL1`,
+			`BACK_COL2`,
+			`BACK_COL3`,
+			`BACK_COL4`,
+			`BACK_COL5`,
+			`BACK_COL6` 
+		)
+		VALUES
+			(
+				#{tabletID},
+				#{tabletName},
+				#{tabletModel},
+				#{tabletBrand},
+				#{tabletIP},
+				#{tabletPort},
+				#{tabletState},
+				#{borrowedStatus},
+				1,
+				now(),
+				now(),
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+		        NULL 
+			)   
+    </insert>
     
     <update id="updateIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotBindTabAllDTO">
 			update t_iot_device_borrow 
 			<set>
-			  borrow_num = #{bindNum}
+			 <if test = "bindNum != null">			
+			   borrow_num = #{bindNum},
+			 </if>
+			  <if test = "borrowedStatus != null and borrowedStatus != ''">
+			   borrowed_status = #{borrowedStatus},
+			  </if>
+			 update_time = now()
 			</set> 
 			where verify_code = #{verifyCode}
     </update>
@@ -174,7 +280,8 @@
     <update id="updateCancelIotTablBorro" parameterType="com.huafen.tablet.model.apply.IotTableCancleDTO">
     		update t_iot_device_borrow 
 			<set>
-			  borrow_num = #{borrowNum}
+			  borrow_num = #{borrowNum},
+			  update_time = now()
 			</set> 
 			where verify_code = #{verifyCode}
 			<if test = "userID != null and userID != ''">
@@ -182,5 +289,56 @@
 			</if>
     </update>
 
+    <update id="updateDeviceReturnTable" parameterType="com.huafen.tablet.model.apply.IotDeviReturnDTO">
+    		update t_iot_device_return 
+			<set>
+			  <if test = "returnNum != null">			  
+			   return_num = #{returnNum},
+			  </if>
+			  update_time = now()
+			</set> 
+			where verify_code = #{verifyCode}
+    </update>
+    
+    <update id="updateIotTabletInfo" parameterType="com.huafen.tablet.model.apply.IotBindTabletDTO">
+			update t_iot_tablet_info 
+			<set>
+				<if test = "tabletState != null and tabletState != ''">				
+			        borrowed_status = #{tabletState},
+				</if>
+				<if test = "verifyCode != null and verifyCode != ''">				
+			        verify_code = #{verifyCode},
+				</if>				
+			  update_time = now()
+			</set> 
+			where tablet_id = #{tabletID}
+    </update>
+	
+	
+    <update id="updateIotEditBablet" parameterType="com.huafen.tablet.model.iot.IotEditTabletDTO">
+    		update t_iot_tablet_info 
+			<set>
+			  <if test = "tabletName != null and tabletName != ''">			  
+			   TABLET_NAME = #{tabletName},
+			  </if>
+			  <if test = "tabletModel != null and tabletModel != ''">			  
+			   TABLET_MODEL = #{tabletModel},
+			  </if>
+			  <if test = "tabletBrand != null and tabletBrand != ''">			  
+			   TABLET_BRAND = #{tabletBrand},
+			  </if>	
+			  <if test = "tabletIP != null and tabletIP != ''">			  
+			   TABLET_IP = #{tabletIP},
+			  </if>	
+			  <if test = "tabletPort != null and tabletPort != ''">			  
+			   TABLET_PORT = #{tabletPort},
+			  </if>	
+			  <if test = "tabletState != null and tabletState != ''">			  
+			   TABLET_STATE = #{tabletState},
+			  </if>			  		  		  		  			  
+			  update_time = now()
+			</set> 
+			where TABLET_ID = #{tabletID}
+    </update>	
 	    
 </mapper>

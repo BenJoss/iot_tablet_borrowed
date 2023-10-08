@@ -31,11 +31,39 @@ public class RedisQueueService {
     }
     
     /**
+     * 消息生产
+     *
+     * @param msg
+     */
+    public void msgReturnProduce(IotBorroFlowDTO iotBorroFlowDTO) {
+        RBlockingDeque<Object> blockDeque = redissonClient.getBlockingDeque(RedisUtil.MQTT_TABLET_REDIS_RETRUN_QUEUE);
+        try {
+            blockDeque.putFirst(iotBorroFlowDTO); // 消息写入队列头部
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+    }
+    
+    /**
      * 消息消费：阻塞
      */
     public Object msgBorrotConsume() {
     	   try {
     		   RBlockingDeque<Object> blockDeque = redissonClient.getBlockingDeque(RedisUtil.MQTT_TABLET_REDIS_QUEUE);
+    		   return  blockDeque.takeLast();  
+		} catch (Exception e) {
+			DeviceException exception = new DeviceException();
+			exception.setMsg(e.getMessage());
+			throw exception;
+		}
+    }
+    
+    /**
+     * 消息消费：阻塞
+     */
+    public Object msgReturnConsume() {
+    	   try {
+    		   RBlockingDeque<Object> blockDeque = redissonClient.getBlockingDeque(RedisUtil.MQTT_TABLET_REDIS_RETRUN_QUEUE);
     		   return  blockDeque.takeLast();  
 		} catch (Exception e) {
 			DeviceException exception = new DeviceException();
