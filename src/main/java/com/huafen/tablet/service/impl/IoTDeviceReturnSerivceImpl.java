@@ -223,8 +223,9 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 				 deviceMapper.insertIotOperLog(iotOperLogDTO);
 				//更新数据库及redis缓存平板状态为使用中
 				 for (IotBindTabletDTO item : iotBindTabletList) {
-					  item.setTabletState(IoTDevUtil.IDLE_STATE);
+					  item.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
 					  deviceMapper.updateIotTabletInfo(item);
+					  deviceMapper.setIotTabletCodeNull(item);
 					  String tabletID = item.getTabletID();
 					  RBucket<IotTabletDTO>   rBucket = redissonClient.getBucket(tabletID);
 					  IotTabletDTO  cacheBindTabletD = rBucket.get();

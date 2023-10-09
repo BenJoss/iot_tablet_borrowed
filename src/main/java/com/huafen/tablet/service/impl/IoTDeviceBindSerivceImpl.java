@@ -219,7 +219,7 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 				 deviceMapper.insertIotOperLog(iotOperLogDTO);
 				//更新数据库及redis缓存平板状态为使用中
 				 for (IotBindTabletDTO item : iotBindTabletList) {
-					  item.setTabletState(IoTDevUtil.USEING_STATUS);
+					  item.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
 					  item.setVerifyCode(verifyCode);
 					  deviceMapper.updateIotTabletInfo(item);
 					  String tabletID = item.getTabletID();

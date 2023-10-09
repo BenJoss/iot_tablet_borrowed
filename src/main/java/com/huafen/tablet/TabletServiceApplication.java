@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import com.huafen.tablet.websocket.WebSocketServer;
 
 @SpringBootApplication
 @EnableKnife4j
@@ -27,8 +26,7 @@ public class TabletServiceApplication {
 			host = InetAddress.getLocalHost().getHostAddress();
 	        System.out.println("[----------------------------------------------------------]");
 	        System.out.println("平板借还服务启动 :" + host );
-	        System.out.println("[----------------------------------------------------------]");
-	        WebSocketServer.inst().run(53135);	      
+	        System.out.println("[----------------------------------------------------------]");     
 		} catch (UnknownHostException e) {
 			
 		}

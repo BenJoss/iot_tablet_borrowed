@@ -57,4 +57,6 @@ public interface DeviceMapper {
 	int updateDeviceReturnTable(IotDeviReturnDTO iotDeviReturnDTO);
 	
 	int updateIotEditBablet(IotEditTabletDTO iotEditTabletDTO);
+	
+	int setIotTabletCodeNull(IotBindTabletDTO iotBindTabletDTO);
 }

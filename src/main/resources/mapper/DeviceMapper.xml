@@ -303,12 +303,21 @@
     <update id="updateIotTabletInfo" parameterType="com.huafen.tablet.model.apply.IotBindTabletDTO">
 			update t_iot_tablet_info 
 			<set>
-				<if test = "tabletState != null and tabletState != ''">				
-			        borrowed_status = #{tabletState},
+				<if test = "borrowedStatus != null and borrowedStatus != ''">				
+			        borrowed_status = #{borrowedStatus},
 				</if>
 				<if test = "verifyCode != null and verifyCode != ''">				
 			        verify_code = #{verifyCode},
 				</if>				
+			  update_time = now()
+			</set> 
+			where tablet_id = #{tabletID}
+    </update>
+    
+    <update id="setIotTabletCodeNull" parameterType="com.huafen.tablet.model.apply.IotBindTabletDTO">
+			update t_iot_tablet_info 
+			<set>
+			  verify_code = null,		
 			  update_time = now()
 			</set> 
 			where tablet_id = #{tabletID}

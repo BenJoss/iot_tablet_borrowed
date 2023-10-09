@@ -1,7 +1,5 @@
 package com.huafen.tablet.controller.apply;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.huafen.tablet.config.RepCode;
 import com.huafen.tablet.model.apply.IotTablBorroDTO;
 import com.huafen.tablet.model.apply.IotTableCancleDTO;
-import com.huafen.tablet.model.chat.CallRmStatDTO;
-import com.huafen.tablet.model.param.IotBabletMntParam;
 import com.huafen.tablet.model.param.TabletApCoParam;
 import com.huafen.tablet.model.req.RepDTO;
 import com.huafen.tablet.msg.DeviceException;
@@ -120,13 +116,5 @@ public class IoTDeviBorroCrtl {
 		return ioTDeviBorroSerivce.queryBorrowVerifyCode(tabletApCoParam);
     }
 	
-	@ApiResponses( value = { 
-			@ApiResponse(code = 200, message = "success",response = CallRmStatDTO.class,reference="list"),
-			@ApiResponse(code = 1001, message = "error")})
-    @ApiOperation(value = "预约人参会信息查询")
-    @PostMapping("/queryTabletMeet")
-    @ResponseBody
-    public List<CallRmStatDTO> queryTabletMeet(@RequestBody IotBabletMntParam iotBabletMntParam){
-    	return new ArrayList<CallRmStatDTO>();
-    }
+
 }

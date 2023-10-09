@@ -12,6 +12,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 @Configuration
 @EnableSwagger2WebMvc
 public class SwaggerConfig{
+	
+    @Bean
+    public Docket operationDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("平板借还操作记录相关接口")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.huafen.tablet.controller.operation"))//扫描的包路径
+                .build();
+    }
+    
     @Bean
     public Docket applyDocket() {
         return new Docket(DocumentationType.SWAGGER_2)

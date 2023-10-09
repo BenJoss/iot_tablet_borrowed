@@ -31,7 +31,7 @@ CREATE TABLE `t_iot_tablet_info`  (
    `TABLET_PORT` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL COMMENT '平板端口',
    `TABLET_STATE` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL COMMENT '平板状态：1：启用、2：禁用',
    `BORROWED_STATUS` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL COMMENT '平板借用状态：1：使用中、2：空闲',
-   `VERIFY_CODE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '借还验证码',
+   `VERIFY_CODE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL COMMENT '借还验证码',
    `TABLET_ORDER` int NULL COMMENT '平板顺序',
    `CREATE_TIME` datetime  NOT NULL COMMENT '创建时间',
    `UPDATE_TIME` datetime  NULL COMMENT '更新时间',
