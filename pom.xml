@@ -181,14 +181,6 @@
 		        <artifactId>guava</artifactId>
 		        <version>${guava.version}</version>
 		    </dependency>
-			<!-- keycloak -->
-		    <dependency>
-		      <groupId>org.keycloak.bom</groupId>
-		      <artifactId>keycloak-adapter-bom</artifactId>
-		      <version>9.0.2</version>
-		      <type>pom</type>
-		      <scope>import</scope>
-		    </dependency>
 			
 		</dependencies>
 
@@ -286,10 +278,6 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 		</dependency>
 
-		<dependency>
-		    <groupId>org.keycloak</groupId>
-		    <artifactId>keycloak-spring-boot-starter</artifactId>
-		</dependency>
 
 			<!--redisson -->
 			<dependency>

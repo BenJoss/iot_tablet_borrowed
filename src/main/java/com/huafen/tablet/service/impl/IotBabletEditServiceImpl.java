@@ -11,6 +11,7 @@ import com.huafen.tablet.mapper.DeviceMapper;
 import com.huafen.tablet.model.iot.IotEditTabletDTO;
 import com.huafen.tablet.model.iot.IotSaveTabletDTO;
 import com.huafen.tablet.model.iot.IotTabletDTO;
+import com.huafen.tablet.model.param.IotDeleTablet;
 import com.huafen.tablet.model.param.IotEditTabletParam;
 import com.huafen.tablet.model.param.TabletMageParam;
 import com.huafen.tablet.model.req.RepDTO;
@@ -67,6 +68,20 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 			if (count == null || count == 0) {
 				deviceMapper.insertIotTabletInfo(iotSaveTabletDTO);
 			}
+			repDTO.setRepCode(RepCode.SUCCESS_CODE);
+		} catch (Exception e) {
+			repDTO.setRepCode(RepCode.ERROR_CODE);
+			repDTO.setRepMsg("");
+			logger.error("异常", e.getMessage());
+		}
+		return repDTO;
+	}
+
+	@Override
+	public RepDTO deleteIotIabletInfoSerivce(IotDeleTablet iotDeleTablet) {
+		RepDTO  repDTO = new RepDTO();
+		try {
+			deviceMapper.deleteIotIabletInfo(iotDeleTablet);
 			repDTO.setRepCode(RepCode.SUCCESS_CODE);
 		} catch (Exception e) {
 			repDTO.setRepCode(RepCode.ERROR_CODE);

@@ -15,6 +15,7 @@ import com.huafen.tablet.model.apply.IotTableCancleDTO;
 import com.huafen.tablet.model.iot.IotEditTabletDTO;
 import com.huafen.tablet.model.iot.IotSaveTabletDTO;
 import com.huafen.tablet.model.iot.IotTabletDTO;
+import com.huafen.tablet.model.param.IotDeleTablet;
 import com.huafen.tablet.model.param.IotEditTabletParam;
 import com.huafen.tablet.model.param.TabletApCoParam;
 import com.huafen.tablet.model.param.TabletApplayParam;
@@ -59,4 +60,6 @@ public interface DeviceMapper {
 	int updateIotEditBablet(IotEditTabletDTO iotEditTabletDTO);
 	
 	int setIotTabletCodeNull(IotBindTabletDTO iotBindTabletDTO);
+	
+	int deleteIotIabletInfo(IotDeleTablet iotDeleTablet);
 }

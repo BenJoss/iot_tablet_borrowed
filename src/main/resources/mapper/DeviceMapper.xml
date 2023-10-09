@@ -5,6 +5,10 @@
         
 <mapper namespace="com.huafen.tablet.mapper.DeviceMapper">
 
+<resultMap type="com.huafen.tablet.model.apply.IotTablBorroCode" id="brorroCodeMap">
+    <result property="verifyCode" column="VERIFY_CODE" />
+</resultMap>
+
 <resultMap type="com.huafen.tablet.model.apply.IotBrorroTabDTO" id="brorroNumMap">
     <result property="allDayNum" column="all_day_num" />
     <result property="mornDayNum" column="morn_day_num" />
@@ -85,7 +89,7 @@
 					LIMIT 1
     </select>
     
-    <select id="queryBorrowVerifyCode" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletApCoParam">
+    <select id="queryBorrowVerifyCode" resultMap="brorroCodeMap" parameterType="com.huafen.tablet.model.param.TabletApCoParam">
                 SELECT
 					ROOM_ID AS ROOM_NAME ,
 					MEET_ID AS MEET_NAME,
@@ -97,9 +101,9 @@
 					t_iot_device_borrow t 
 				WHERE 1=1
 				<if test = "userID != null and userID != ''">
-				   t.USER_ID=#{userID}
+				  AND t.USER_ID=#{userID}
 				</if>	
-					ORDER BY CREATE_TIME DESC
+					ORDER BY t.CREATE_TIME DESC
     </select>
     
     <select id="queryIotTabletInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
@@ -349,5 +353,9 @@
 			</set> 
 			where TABLET_ID = #{tabletID}
     </update>	
-	    
+
+    <delete id="deleteIotIabletInfo" parameterType="com.huafen.tablet.model.param.IotDeleTablet">
+		DELETE FROM t_iot_tablet_info WHERE  TABLET_ID=#{tabletID}
+	</delete>
+		    
 </mapper>

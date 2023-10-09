@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.huafen.tablet.model.iot.IotEditTabletDTO;
 import com.huafen.tablet.model.iot.IotSaveTabletDTO;
+import com.huafen.tablet.model.param.IotDeleTablet;
 import com.huafen.tablet.model.param.TabletMageParam;
 import com.huafen.tablet.model.req.RepDTO;
 import com.huafen.tablet.service.IotBabletEditService;
@@ -57,5 +58,15 @@ public class IotBabletEditCrtl {
     @ResponseBody
     public RepDTO saveBablet(@RequestBody IotSaveTabletDTO iotSaveTabletDTO){
     	return iotBabletEditService.saveBabletSerivce(iotSaveTabletDTO);
+    }
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "平板信息删除")
+    @PostMapping("/deleteIotIablet")
+    @ResponseBody
+    public RepDTO deleteIotIablet(@RequestBody IotDeleTablet iotDeleTablet){
+    	return iotBabletEditService.deleteIotIabletInfoSerivce(iotDeleTablet);
     }
 }
