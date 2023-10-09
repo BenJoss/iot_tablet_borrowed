@@ -16,6 +16,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import com.huafen.tablet.model.iot.IotTabletDTO;
 import com.huafen.tablet.model.param.TabletMageParam;
 import com.huafen.tablet.model.param.TabletRevertParam;
 import com.huafen.tablet.model.req.RepDTO;
+import com.huafen.tablet.service.IoTDeviceBorrReturnRecodeSerivce;
 import com.huafen.tablet.service.IoTDeviceReturnSerivce;
 import com.huafen.tablet.util.IoTDevUtil;
 import com.huafen.tablet.util.RedisUtil;
@@ -48,7 +50,9 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 	private DeviceMapper deviceMapper;
 	@Autowired
 	private WSIotServer webSocket;
-	
+	@Autowired
+	@Qualifier("ioTDeviceBorrReturnRecodeSerivce")
+	private IoTDeviceBorrReturnRecodeSerivce ioTDeviceBorrReturnRecodeSerivce;
 	/**
      * 读取指定 key 下 member 的 score
      * 返回null 表示不存在
@@ -232,6 +236,16 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 					  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
 					  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
 				}
+				//更新借用操作记录
+				 List<IotTabletDTO> iotTabletList = new ArrayList<IotTabletDTO>();
+				 for (IotBindTabletDTO item : iotBindTabletList) {
+					  IotTabletDTO  iotTablet =  new IotTabletDTO();
+					  iotTablet.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
+					  iotTablet.setVerifyCode(verifyCode);
+					  iotTablet.setTabletID(item.getTabletID());
+					  iotTabletList.add(iotTablet);
+				 }
+				 ioTDeviceBorrReturnRecodeSerivce.updateBorroReturnOperLog(iotTabletList);
 				//删除借还码对应的zset缓存
 				if (redissonClient.getBucket(verifyCode).isExists()) {
 					redissonClient.getBucket(verifyCode).delete();

@@ -16,6 +16,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +29,12 @@ import com.huafen.tablet.model.apply.IotBindTabletDTO;
 import com.huafen.tablet.model.apply.IotBorroFlowDTO;
 import com.huafen.tablet.model.apply.IotOperLogDTO;
 import com.huafen.tablet.model.apply.IotTablBorroHisDTO;
+import com.huafen.tablet.model.iot.IotBorRetuDTO;
 import com.huafen.tablet.model.iot.IotTabletDTO;
 import com.huafen.tablet.model.param.TabletRevertParam;
 import com.huafen.tablet.model.req.RepDTO;
 import com.huafen.tablet.service.IoTDeviceBindSerivce;
+import com.huafen.tablet.service.IoTDeviceBorrReturnRecodeSerivce;
 import com.huafen.tablet.util.IoTDevUtil;
 import com.huafen.tablet.util.RedisUtil;
 import com.huafen.tablet.websocket.WSIotServer;
@@ -47,6 +50,10 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 	private DeviceMapper deviceMapper;
 	@Autowired
 	private WSIotServer webSocket;
+	
+	@Autowired
+	@Qualifier("ioTDeviceBorrReturnRecodeSerivce")
+	private IoTDeviceBorrReturnRecodeSerivce ioTDeviceBorrReturnRecodeSerivce;
 	
 	@Override
 	public RepDTO queryBindInfoSerivce(TabletRevertParam tabletRevertParam) {
@@ -228,6 +235,16 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 					  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
 					  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
 				}
+				// 录入绑定的平板记录
+				 List<IotBorRetuDTO> iotBorRetuList = new ArrayList<IotBorRetuDTO>();
+				 for (IotBindTabletDTO item : iotBindTabletList) {
+					  IotBorRetuDTO iotBorRetuDTO = new IotBorRetuDTO();
+					  iotBorRetuDTO.setVerifyCode(verifyCode);
+					  iotBorRetuDTO.setTabletID(item.getTabletID());
+					  iotBorRetuDTO.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
+					  iotBorRetuList.add(iotBorRetuDTO);
+					  ioTDeviceBorrReturnRecodeSerivce.saveDeviceBorrReturnRecodes(iotBorRetuList);
+				 }
 				//删除借还码对应的zset缓存
 				if (redissonClient.getBucket(verifyCode).isExists()) {
 					redissonClient.getBucket(verifyCode).delete();

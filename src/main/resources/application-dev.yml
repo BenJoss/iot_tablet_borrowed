@@ -26,24 +26,6 @@ spring:
 mybatis:
   #  配置xml路径
   mapper-locations: "classpath:mapper/*Mapper.xml"
-# keycloak
-keycloak:
-  # 表示是一个public的client
-  public-client: true
-  # keycloak的地址
-  auth-server-url: http://localhost:8080/auth
-  # keycloak中的realm
-  realm: call-service-realm
-  resource: iot-auth-ms
-  securityConstraints:
-  - authRoles:
-    # 以下路径需要user-role角色才能访问
-    - '*'
-    securityCollections:
-    # name可以随便写
-    - name: user-role-mappings
-      patterns:
-      - /articles
 # logging
 logging:
   config:

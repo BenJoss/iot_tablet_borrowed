@@ -35,6 +35,12 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			    	  Integer count = deviceBorrowMapper.countBorroReturnOperNum(item);
 			    	 if (count == null || count == 0) {
 			    		 deviceBorrowMapper.insertBorroReturnOperLog(item);
+					}else {
+						IotTabletDTO iotTabletDTO = new IotTabletDTO();
+						iotTabletDTO.setBorrowedStatus(item.getBorrowedStatus());
+						iotTabletDTO.setTabletID(item.getTabletID());
+						iotTabletDTO.setVerifyCode(item.getVerifyCode());
+						deviceBorrowMapper.updateBorroReturnOperLog(iotTabletDTO);
 					}
 				}
 			}
