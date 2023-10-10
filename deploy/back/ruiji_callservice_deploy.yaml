@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: call-service
+  namespace: iot-dd
+  labels:
+    app: call-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: call-service
+  template:
+    metadata:
+      labels:
+        app: call-service
+    spec:
+      restartPolicy: Always
+      hostNetwork: false
+      nodeSelector: {}
+      containers:
+        - name: call-service
+          image: 172.28.5.18:5000/iot/callservice:1.0.0.1.RELEASE
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: call-service
+  namespace: iot-dd
+  labels:
+    app: call-service
+spec:
+  type: NodePort
+  ports:
+    - name: call-port
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+      nodePort: 8084
+  selector:
+    app: call-service

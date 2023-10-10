@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+      
+<mapper namespace="com.huafen.tablet.mapper.DeviceBorrowMapper">
+
+	<resultMap type="com.huafen.tablet.model.iot.IotBorRetuDTO" id="borrowRetultMap">
+	    <result property="verifyCode" column="VERIFY_CODE" />
+	    <result property="tabletID" column="TABLET_ID" />
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />
+	</resultMap>
+
+	<resultMap type="com.huafen.tablet.model.iot.IotTabletDTO" id="iotTabletMap">
+	    <result property="tabletID" column="TABLET_ID" />
+	    <result property="tabletName" column="TABLET_NAME" />
+	    <result property="tabletModel" column="TABLET_MODEL" />
+	    <result property="tabletBrand" column="TABLET_BRAND" />
+	    <result property="tabletIP" column="TABLET_IP" />
+	    <result property="tabletPort" column="TABLET_PORT" />
+	    <result property="tabletState" column="TABLET_STATE" />
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />
+	    <result property="verifyCode" column="VERIFY_CODE" />
+	</resultMap>
+
+    <select id="queryBorrowRetultInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
+			SELECT
+			    a.VERIFY_CODE,			    
+				a.TABLET_ID,
+				a.BORROWED_STATUS,
+				b.TABLET_MODEL,
+				b.TABLET_STATE,
+				b.TABLET_NAME,
+				b.TABLET_IP,
+				b.TABLET_BRAND,
+				b.TABLET_NAME,
+				b.TABLET_PORT
+			FROM
+				t_borrow_return_oper_recods a,t_iot_tablet_info b
+			WHERE
+				1 = 1
+				AND a.TABLET_ID=b.TABLET_ID
+				AND a.VERIFY_CODE = #{verifyCode}											
+				ORDER BY a.CREATE_TIME DESC
+    </select>
+
+    <select id="countBorroReturnOperNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.IotBorRetuDTO">
+               SELECT COUNT(1) FROM t_borrow_return_oper_recods t WHERE t.verify_code = #{verifyCode} AND t.TABLET_ID = #{tabletID}
+    </select> 
+
+    <insert id="insertBorroReturnOperLog" parameterType="com.huafen.tablet.model.iot.IotBorRetuDTO">
+		INSERT INTO `t_borrow_return_oper_recods` (`VERIFY_CODE`, `TABLET_ID`, `BORROWED_STATUS`, `CREATE_TIME`, `UPDATE_TIME`, `BACK_COL1`, `BACK_COL2`, `BACK_COL3`, `BACK_COL4`, `BACK_COL5`, `BACK_COL6` )
+		VALUES
+			( #{verifyCode}, #{tabletID}, #{borrowedStatus}, now(), now(), NULL, NULL, NULL, NULL, NULL, NULL ); 
+    </insert>
+
+    <update id="updateBorroReturnOperLog" parameterType="com.huafen.tablet.model.iot.IotTabletDTO">
+    		update t_borrow_return_oper_recods 
+			<set>
+			  <if test = "borrowedStatus != null and borrowedStatus != ''">			  
+			    BORROWED_STATUS = #{borrowedStatus},
+			  </if>			  		  		  		  			  
+			  update_time = now()
+			</set> 
+			where TABLET_ID = #{tabletID}
+		 	and verify_code = #{verifyCode}
+    </update>
+    
+    <delete id="deleteIotBorReturnOperLog" parameterType="com.huafen.tablet.model.iot.IotBorRetuDTO">
+		DELETE FROM t_borrow_return_oper_recods WHERE verify_code=#{verifyCode} AND TABLET_ID=#{tabletID}
+	</delete>
+    
+</mapper>
