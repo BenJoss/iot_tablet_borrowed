@@ -15,16 +15,22 @@ public class IoTDevUtil {
 	public final static String  FINISH_BORROWED="3";
 	
 	public final static String  EXCEPTION_BORROWED="4";
+	
+	public final static String  CANCEL_BORROWED="5";
 	/**
-	 * 平板借用状态：1：使用中、2：空闲
+	 * 平板借用状态：1：使用中、2：空闲、3: 已归还
 	 */
 	public final static String  USEING_STATUS="1";
 	/**
-	 * 平板借用状态：1：使用中、2：空闲
+	 * 平板借用状态：1：使用中、2：空闲、3: 已归还
 	 */
 	public final static String  IDLE_STATE="2";
 	
-	public final static String  CANCEL_BORROWED="5";
+	/**
+	 * 平板借用状态：1：使用中、2：空闲、3: 已归还
+	 */
+	public final static String  RETURN_STATE="3";
+	
 	
 	public final static String  ALL_DAY="全天";
 	
@@ -54,6 +60,7 @@ public class IoTDevUtil {
 	
 	public final static String  IOTDEV_RESULT="data";
 	
+	public final static String  RETURN_STATE_NUM="returnNum";
    /** 
     * @Description: 创建Token，怕麻烦的可以直接生成UUID作为toekn的key和value 
     * @Date: 2020/1/8 0008 

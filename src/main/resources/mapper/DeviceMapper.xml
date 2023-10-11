@@ -73,7 +73,7 @@
                SELECT COUNT(1) FROM t_iot_tablet_info t WHERE t.TABLET_ID=#{tabletID}
     </select>    
     
-    <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletApCoParam">
+    <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
                SELECT
 					ROOM_ID AS ROOM_NAME ,
 					MEET_ID AS MEET_NAME,
@@ -85,6 +85,13 @@
 					t_iot_device_borrow t 
 				WHERE
 					t.VERIFY_CODE=#{verifyCode}
+                   <if test="borrowedStatusList != null and borrowedStatusList.size() > 0 ">
+						AND t.BORROWED_STATUS IN
+						<foreach item="item" index="index" collection="borrowedStatusList"
+		                     open="(" separator="," close=")">
+		                   #{item}
+		                </foreach>
+				   </if>					
 					ORDER BY CREATE_TIME DESC
 					LIMIT 1
     </select>

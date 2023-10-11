@@ -12,14 +12,14 @@ public class PageBean<T> implements Serializable{
 	 */
 	private static final long serialVersionUID = 4120134091666547284L;
 	
-	@ApiModelProperty(value="借用时间 开始时间",required = true,example = "2023-09-14 08:30:00")
+	@ApiModelProperty(value="借用时间 开始时间",required = false,example = "2023-09-14 08:30:00")
 	private String startTime;
-	@ApiModelProperty(value="借用时间 结束时间",required = true,example = "2023-09-14 10:30:00")
+	@ApiModelProperty(value="借用时间 结束时间",required = false,example = "2023-09-14 10:30:00")
 	private String endTime;
-	@ApiModelProperty(value="借用人",required = false,example = "维康")
-	private String userName;
+	@ApiModelProperty(value="借出用户ID",required = true,example = "4600072255")
+	private String userID;
 	@ApiModelProperty(value="借用状态",example = "1：待借用、2：借用中、3：完结、4：异常、5：取消",required = false)
-	private String borrowedStatus;
+	private List<String> borrowedStatusList;
 	
 	@ApiModelProperty(value="当前页数",example = "1")
     private int pageNum; //当前页数
@@ -66,20 +66,20 @@ public class PageBean<T> implements Serializable{
 		this.endTime = endTime;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUserID() {
+		return userID;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUserID(String userID) {
+		this.userID = userID;
 	}
 
-	public String getBorrowedStatus() {
-		return borrowedStatus;
+	public List<String> getBorrowedStatusList() {
+		return borrowedStatusList;
 	}
 
-	public void setBorrowedStatus(String borrowedStatus) {
-		this.borrowedStatus = borrowedStatus;
+	public void setBorrowedStatusList(List<String> borrowedStatusList) {
+		this.borrowedStatusList = borrowedStatusList;
 	}
 
 	public int getPageNum() {

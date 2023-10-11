@@ -225,7 +225,7 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 				 iotOperLogDTO.setOperateType("1");
 				 iotOperLogDTO.setOperateCont("归还"+bindNum+"平板");
 				 deviceMapper.insertIotOperLog(iotOperLogDTO);
-				//更新数据库及redis缓存平板状态为使用中
+				//更新数据库及redis缓存平板状态为空闲中
 				 for (IotBindTabletDTO item : iotBindTabletList) {
 					  item.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
 					  deviceMapper.updateIotTabletInfo(item);
@@ -233,14 +233,16 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 					  String tabletID = item.getTabletID();
 					  RBucket<IotTabletDTO>   rBucket = redissonClient.getBucket(tabletID);
 					  IotTabletDTO  cacheBindTabletD = rBucket.get();
-					  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
-					  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
+					  if(cacheBindTabletD != null) {
+						  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
+						  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
+					  }
 				}
 				//更新借用操作记录
 				 List<IotTabletDTO> iotTabletList = new ArrayList<IotTabletDTO>();
 				 for (IotBindTabletDTO item : iotBindTabletList) {
 					  IotTabletDTO  iotTablet =  new IotTabletDTO();
-					  iotTablet.setBorrowedStatus(IoTDevUtil.IDLE_STATE);
+					  iotTablet.setBorrowedStatus(IoTDevUtil.RETURN_STATE);
 					  iotTablet.setVerifyCode(verifyCode);
 					  iotTablet.setTabletID(item.getTabletID());
 					  iotTabletList.add(iotTablet);
@@ -251,13 +253,15 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 					redissonClient.getBucket(verifyCode).delete();
 				}
 				String topic = iotDeviReturnDTO.getTopic();
-				// 删除 topic 对应 verifyCode
-				if (redissonClient.getBucket(topic).isExists()) {
-					redissonClient.getBucket(topic).delete();
+				if(topic != null) {
+					// 删除 topic 对应 verifyCode
+					if (redissonClient.getBucket(topic).isExists()) {
+						redissonClient.getBucket(topic).delete();
+					}
+					// 删除 RETURN_TOKEN 推送topic
+					this.removeZSetMember(IoTDevUtil.RETURN_TOKEN, topic);
+					//
 				}
-				// 删除 BORRO_TOKEN 推送topic
-				this.removeZSetMember(IoTDevUtil.RETURN_TOKEN, topic);
-				//
 				repDTO.setRepCode(RepCode.SUCCESS_CODE);
 			}
 		} catch (Exception e) {
@@ -288,6 +292,10 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 	public RepDTO checkReturnInfoSerivce(TabletRevertParam tabletRevertParam) {
 		RepDTO  repDTO = new RepDTO();
 		try {
+			List<String> borrowedStatusList = new ArrayList<String>();
+			borrowedStatusList.add(IoTDevUtil.IN_BORROWED);
+			borrowedStatusList.add(IoTDevUtil.EXCEPTION_BORROWED);
+			tabletRevertParam.setBorrowedStatusList(borrowedStatusList);
 			IotTablBorroHisDTO iotTablBorroHisDTO = deviceMapper.queryBindBorrowInfo(tabletRevertParam);
 			 if (iotTablBorroHisDTO != null ) {
 				 repDTO.setRepCode(RepCode.SUCCESS_CODE);
@@ -298,7 +306,7 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 				repDTO.setRepCode(RepCode.SUCCESS_CODE);
 			}else {
 				repDTO.setRepCode(RepCode.ERROR_CODE);
-				repDTO.setRepMsg("借还码不存在,请重新输入");
+				repDTO.setRepMsg("借还码不存在或已失效,请重新输入");
 			}
 		} catch (Exception e) {
 			logger.error("异常", e.getMessage());

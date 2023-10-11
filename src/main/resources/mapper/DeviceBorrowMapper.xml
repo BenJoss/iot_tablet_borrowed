@@ -11,6 +11,15 @@
 	    <result property="borrowedStatus" column="BORROWED_STATUS" />
 	</resultMap>
 
+
+	<resultMap type="com.huafen.tablet.model.apply.IotTablBorroCode" id="borrowCodeRetultMap">
+	    <result property="verifyCode" column="VERIFY_CODE" />
+	    <result property="borrowNum" column="BORROW_NUM" />
+	    <result property="returnNum" column="RETURN_NUM" />
+	    <result property="borrowTime" column="BORROW_TIME" />
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />
+	</resultMap>
+
 	<resultMap type="com.huafen.tablet.model.iot.IotTabletDTO" id="iotTabletMap">
 	    <result property="tabletID" column="TABLET_ID" />
 	    <result property="tabletName" column="TABLET_NAME" />
@@ -40,9 +49,63 @@
 			WHERE
 				1 = 1
 				AND a.TABLET_ID=b.TABLET_ID
-				AND a.VERIFY_CODE = #{verifyCode}											
+				AND a.VERIFY_CODE = #{verifyCode}
+				<if test = "borrowedStatus != null and borrowedStatus != ''">
+				AND	a.BORROWED_STATUS = #{borrowedStatus}
+				</if>											
 				ORDER BY a.CREATE_TIME DESC
     </select>
+
+
+ <select id="countCodeInfoPage" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.PageBean">
+			SELECT
+                  COUNT(a.ID)
+			FROM
+				t_iot_device_borrow a
+				LEFT JOIN
+				t_iot_device_return b 
+				on a.VERIFY_CODE = b.VERIFY_CODE
+			WHERE
+				1 = 1 
+				<if test="borrowedStatusList != null and borrowedStatusList.size() > 0 ">
+					AND a.BORROWED_STATUS IN
+					<foreach item="item" index="index" collection="borrowedStatusList"
+                         open="(" separator="," close=")">
+                       #{item}
+                    </foreach>
+				</if>
+				AND a.USER_ID = #{userID}													
+   </select>   
+
+ <select id="queryCodeInfoPageList" resultMap="borrowCodeRetultMap" parameterType="com.huafen.tablet.model.iot.PageBean">
+			SELECT
+				a.ROOM_ID AS ROOM_NAME,
+				a.MEET_ID AS MEET_NAME,
+				a.VERIFY_CODE,
+				a.BORROW_NUM,
+				a.USER_NAME,
+				a.BORROWED_STATUS,
+				date_format( a.START_TIME, '%Y-%m-%d %T' ) AS BORROW_TIME,
+				b.RETURN_NUM 
+			FROM
+				t_iot_device_borrow a
+				LEFT JOIN
+				t_iot_device_return b 
+				on a.VERIFY_CODE = b.VERIFY_CODE
+			WHERE
+				1 = 1 
+				<if test="borrowedStatusList != null and borrowedStatusList.size() > 0 ">
+					AND a.BORROWED_STATUS IN
+					<foreach item="item" index="index" collection="borrowedStatusList"
+                         open="(" separator="," close=")">
+                       #{item}
+                    </foreach>
+				</if>
+				AND a.USER_ID = #{userID}
+				ORDER BY a.CREATE_TIME DESC
+				LIMIT #{start}, #{pageSize}
+    </select>
+
 
     <select id="countBorroReturnOperNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.IotBorRetuDTO">
                SELECT COUNT(1) FROM t_borrow_return_oper_recods t WHERE t.verify_code = #{verifyCode} AND t.TABLET_ID = #{tabletID}
