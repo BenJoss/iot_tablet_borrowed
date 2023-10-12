@@ -2,6 +2,9 @@ package com.huafen.tablet.service.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(IotBabletEditServiceImpl.class);
 	@Autowired
 	private DeviceMapper deviceMapper;
+	@Resource
+    private RedissonClient redissonClient;
 	
 	@Override
 	public RepDTO queryMageBabletSerivce(TabletMageParam tabletMageParam) {
@@ -81,7 +86,11 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 	public RepDTO deleteIotIabletInfoSerivce(IotDeleTablet iotDeleTablet) {
 		RepDTO  repDTO = new RepDTO();
 		try {
+			String tabletID = iotDeleTablet.getTabletID();
 			deviceMapper.deleteIotIabletInfo(iotDeleTablet);
+			if (redissonClient.getBucket(tabletID).isExists()) {
+				redissonClient.getBucket(tabletID).delete();
+			}
 			repDTO.setRepCode(RepCode.SUCCESS_CODE);
 		} catch (Exception e) {
 			repDTO.setRepCode(RepCode.ERROR_CODE);

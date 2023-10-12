@@ -3,6 +3,8 @@ package com.huafen.tablet.controller.his;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.huafen.tablet.model.apply.IotMvBorrHisDTO;
 import com.huafen.tablet.model.apply.IotTablBorrHisDTO;
 import com.huafen.tablet.model.apply.IotTablMvLogDTO;
+import com.huafen.tablet.model.his.IotBorrowHisDTO;
 import com.huafen.tablet.model.iot.PageBean;
+import com.huafen.tablet.model.param.BorrowHisParam;
 import com.huafen.tablet.model.param.TabletMvLogParam;
 import com.huafen.tablet.model.param.TabletMvParam;
+import com.huafen.tablet.model.req.ReposeDTO;
+import com.huafen.tablet.service.IoTBrrowoHisSerivce;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -25,6 +31,9 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/IotDeviHisCrtl")
 public class IotDeviHisCrtl {
 
+	@Autowired
+	@Qualifier("ioTBrrowoHisSerivce")
+	private IoTBrrowoHisSerivce ioTBrrowoHisSerivce;
 	
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = IotTablBorrHisDTO.class,reference="list"),
@@ -64,5 +73,15 @@ public class IotDeviHisCrtl {
 			iotTablMvLogDTO.setDescribe("借用申请的10台平板");
 			list.add(iotTablMvLogDTO);
 			return new ArrayList<IotTablMvLogDTO>();
+    }
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = ReposeDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "平板借还首页数据显示", notes = "查询平板借还首页数据显示")
+    @PostMapping("/queryBorrowHisRetultInfo")
+    @ResponseBody
+    public ReposeDTO<List<IotBorrowHisDTO>> queryBorrowHisRetultInfo(@RequestBody BorrowHisParam borrowHisParam){
+    	return ioTBrrowoHisSerivce.queryBorrowHisRetultInfo(borrowHisParam);
     }
 }

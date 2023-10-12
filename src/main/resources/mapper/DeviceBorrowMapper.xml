@@ -5,6 +5,19 @@
       
 <mapper namespace="com.huafen.tablet.mapper.DeviceBorrowMapper">
 
+	<resultMap type="com.huafen.tablet.model.his.IotBorrowHisDTO" id="borrowHisRetultMap">
+		<result property="roomID" column="ROOM_ID" />
+		<result property="roomName" column="ROOM_NAME" />
+		<result property="meetID" column="MEET_ID" />
+		<result property="meetName" column="MEET_NAME" />
+	    <result property="verifyCode" column="VERIFY_CODE" />
+	    <result property="borrowNum" column="BORROW_NUM" />
+	    <result property="userName" column="USER_NAME" />
+	    <result property="startTime" column="BORROW_START_TIME" />
+	    <result property="endTime" column="BORROW_END_TIME" />
+	</resultMap>
+	
+	
 	<resultMap type="com.huafen.tablet.model.iot.IotBorRetuDTO" id="borrowRetultMap">
 	    <result property="verifyCode" column="VERIFY_CODE" />
 	    <result property="tabletID" column="TABLET_ID" />
@@ -32,6 +45,33 @@
 	    <result property="verifyCode" column="VERIFY_CODE" />
 	</resultMap>
 
+    <select id="queryBorrowHisRetultInfo" resultMap="borrowHisRetultMap" parameterType="com.huafen.tablet.model.param.BorrowHisParam">
+		SELECT
+		  t.ROOM_ID,
+			t.MEET_ID,
+			(SELECT a.ROOM_NAME FROM t_call_service_room a WHERE a.ROOM_ID = t.ROOM_ID LIMIT 1)  AS ROOM_NAME,
+			(SELECT a.MEET_NAME FROM t_call_service_meet a WHERE a.MEET_ID = t.MEET_ID LIMIT 1)  AS MEET_NAME,
+			VERIFY_CODE,
+			BORROW_NUM,
+			USER_NAME,
+			date_format( START_TIME, '%Y-%m-%d %T' ) AS BORROW_START_TIME,
+		  date_format( END_TIME, '%Y-%m-%d %T' ) AS BORROW_END_TIME  
+		FROM
+			t_iot_device_borrow t 
+		WHERE 
+			1 =1
+			AND DATEDIFF(
+				t.CREATE_TIME,
+			NOW())  <![CDATA[ <= ]]> #{endDayNum}
+			
+				AND DATEDIFF(
+				t.CREATE_TIME,
+				NOW()) <![CDATA[ >=0 ]]>
+				ORDER BY t.CREATE_TIME DESC
+				LIMIT #{showNum}
+	</select>
+	
+	
     <select id="queryBorrowRetultInfo" resultMap="iotTabletMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
 			SELECT
 			    a.VERIFY_CODE,			    

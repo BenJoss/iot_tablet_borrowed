@@ -201,7 +201,9 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 				  RBucket<IotTabletDTO> bucket = redissonClient.getBucket(tabletID);
 				  if (!redissonClient.getBucket(tabletID).isExists()) {
 					   bucket.set(item,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
-				  }
+				  }else {
+					  bucket.set(item,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("异常", e.getMessage());
