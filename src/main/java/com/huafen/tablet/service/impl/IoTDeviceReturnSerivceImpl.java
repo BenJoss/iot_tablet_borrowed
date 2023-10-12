@@ -3,6 +3,7 @@ package com.huafen.tablet.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -195,18 +196,22 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 		try {
 			List<IotBindTabletDTO> iotBindTabletList = iotDeviReturnDTO.getIotBindTabletList();
 			if (!iotBindTabletList.isEmpty()) {
+				Iterator<IotBindTabletDTO>  iterator = iotBindTabletList.iterator();
+				while (iterator.hasNext()) {
+					  IotBindTabletDTO item = iterator.next();
+					  String borrowedStatus = item.getBorrowedStatus();
+					  if (IoTDevUtil.RETURN_STATE.equals(borrowedStatus)||IoTDevUtil.IDLE_STATE.equals(borrowedStatus)) {
+						  iterator.remove();
+					}
+				}
+			}
+			if (!iotBindTabletList.isEmpty()) {
 				 // 更新借用状态
 				 String verifyCode = iotDeviReturnDTO.getVerifyCode();
 				 int returnNum = iotBindTabletList.size();
 				 int bindNum = iotDeviReturnDTO.getBorrowNum();
 				 IotBindTabAllDTO iotBindTabAllDTO = new IotBindTabAllDTO();
 				 iotBindTabAllDTO.setVerifyCode(verifyCode);
-				 if (returnNum == bindNum) {
-					 iotBindTabAllDTO.setBorrowedStatus(IoTDevUtil.FINISH_BORROWED);
-				 }else if (returnNum != bindNum) {
-					 iotBindTabAllDTO.setBorrowedStatus(IoTDevUtil.EXCEPTION_BORROWED);
-				 }
-				 deviceMapper.updateIotTablBorro(iotBindTabAllDTO);
 				 // 新增归还记录
 				 TabletRevertParam tabletRevertParam = new TabletRevertParam();
 				 tabletRevertParam.setVerifyCode(verifyCode);
@@ -219,11 +224,17 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 					 iotDeviReturnDTO.setReturnNum(returnNum);
 					 deviceMapper.updateDeviceReturnTable(iotDeviReturnDTO);
 				}
+				 if (returnNum == bindNum) {
+					 iotBindTabAllDTO.setBorrowedStatus(IoTDevUtil.FINISH_BORROWED);
+				 }else if (returnNum != bindNum) {
+					 iotBindTabAllDTO.setBorrowedStatus(IoTDevUtil.EXCEPTION_BORROWED);
+				 }
+				 deviceMapper.updateIotTablBorro(iotBindTabAllDTO);
 				 // 新增日志
 				 IotOperLogDTO iotOperLogDTO = new IotOperLogDTO();
 				 iotOperLogDTO.setOperateId(iotBindTabAllDTO.getVerifyCode());
 				 iotOperLogDTO.setOperateType("1");
-				 iotOperLogDTO.setOperateCont("归还"+bindNum+"平板");
+				 iotOperLogDTO.setOperateCont("归还"+returnNum+"平板");
 				 deviceMapper.insertIotOperLog(iotOperLogDTO);
 				//更新数据库及redis缓存平板状态为空闲中
 				 for (IotBindTabletDTO item : iotBindTabletList) {

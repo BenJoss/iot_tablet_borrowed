@@ -3,6 +3,7 @@ package com.huafen.tablet.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -215,38 +216,54 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 		try {
 			List<IotBindTabletDTO> iotBindTabletList = iotBindTabAllDTO.getIotBindTabletList();
 			if (!iotBindTabletList.isEmpty()) {
+				Iterator<IotBindTabletDTO>  iterator = iotBindTabletList.iterator();
+				while (iterator.hasNext()) {
+					  IotBindTabletDTO item = iterator.next();
+					  String borrowedStatus = item.getBorrowedStatus();
+					  if (IoTDevUtil.RETURN_STATE.equals(borrowedStatus)||IoTDevUtil.USEING_STATUS.equals(borrowedStatus)) {
+						  iterator.remove();
+					}
+				}
+			}
+			if (!iotBindTabletList.isEmpty()) {
 				 int bindNum = iotBindTabletList.size();
 				 String verifyCode = iotBindTabAllDTO.getVerifyCode();
 				 iotBindTabAllDTO.setBorrowedStatus(IoTDevUtil.IN_BORROWED);
 				 deviceMapper.updateIotTablBorro(iotBindTabAllDTO);
+				 // 操作日志
 				 IotOperLogDTO iotOperLogDTO = new IotOperLogDTO();
 				 iotOperLogDTO.setOperateId(iotBindTabAllDTO.getVerifyCode());
 				 iotOperLogDTO.setOperateType("1");
 				 iotOperLogDTO.setOperateCont("借用绑定"+bindNum+"平板");
 				 deviceMapper.insertIotOperLog(iotOperLogDTO);
-				//更新数据库及redis缓存平板状态为使用中
-				 for (IotBindTabletDTO item : iotBindTabletList) {
-					  item.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
-					  item.setVerifyCode(verifyCode);
-					  deviceMapper.updateIotTabletInfo(item);
-					  String tabletID = item.getTabletID();
-					  RBucket<IotTabletDTO>   rBucket = redissonClient.getBucket(tabletID);
-					  IotTabletDTO  cacheBindTabletD = rBucket.get();
-					  if(cacheBindTabletD != null) {
-						  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
-						  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);  
-					  }
-				}
-				// 录入绑定的平板记录
+				 // 录入绑定的平板记录
 				 List<IotBorRetuDTO> iotBorRetuList = new ArrayList<IotBorRetuDTO>();
 				 for (IotBindTabletDTO item : iotBindTabletList) {
-					  IotBorRetuDTO iotBorRetuDTO = new IotBorRetuDTO();
-					  iotBorRetuDTO.setVerifyCode(verifyCode);
-					  iotBorRetuDTO.setTabletID(item.getTabletID());
-					  iotBorRetuDTO.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
-					  iotBorRetuList.add(iotBorRetuDTO);
-					  ioTDeviceBorrReturnRecodeSerivce.saveDeviceBorrReturnRecodes(iotBorRetuList);
+					  if (IoTDevUtil.IDLE_STATE.equals(item.getBorrowedStatus())) {
+							  IotBorRetuDTO iotBorRetuDTO = new IotBorRetuDTO();
+							  iotBorRetuDTO.setVerifyCode(verifyCode);
+							  iotBorRetuDTO.setTabletID(item.getTabletID());
+							  iotBorRetuDTO.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
+							  iotBorRetuList.add(iotBorRetuDTO);  
+					  }
 				 }
+				 ioTDeviceBorrReturnRecodeSerivce.saveDeviceBorrReturnRecodes(iotBorRetuList);
+				//更新数据库及redis缓存平板状态为使用中
+				 for (IotBindTabletDTO item : iotBindTabletList) {
+					 if (IoTDevUtil.IDLE_STATE.equals(item.getBorrowedStatus())) {
+						  item.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
+						  item.setVerifyCode(verifyCode);
+						  deviceMapper.updateIotTabletInfo(item);
+						  String tabletID = item.getTabletID();
+						  RBucket<IotTabletDTO>   rBucket = redissonClient.getBucket(tabletID);
+						  IotTabletDTO  cacheBindTabletD = rBucket.get();
+						  if(cacheBindTabletD != null) {
+							  cacheBindTabletD.setBorrowedStatus(IoTDevUtil.USEING_STATUS);
+							  rBucket.set(cacheBindTabletD,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);  
+						  }
+					 }
+					  
+				}
 				//删除借还码对应的zset缓存
 				if (redissonClient.getBucket(verifyCode).isExists()) {
 					redissonClient.getBucket(verifyCode).delete();

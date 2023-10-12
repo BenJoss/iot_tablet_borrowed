@@ -27,6 +27,12 @@ public class RedissionConfig {
         singleServerConfig.setPingConnectionInterval(30000);
         singleServerConfig.setConnectionPoolSize(redisProperties.getConnectionPoolSize());
         singleServerConfig.setDatabase(redisProperties.getDatabase());
+        if (!"".equals(redisProperties.getPassword())) {
+        	singleServerConfig.setPassword(redisProperties.getPassword());
+		}
+        if (!"".equals(redisProperties.getUsername())) {
+            singleServerConfig.setUsername(redisProperties.getUsername());	
+        }
         return Redisson.create(config);
     }
 }
