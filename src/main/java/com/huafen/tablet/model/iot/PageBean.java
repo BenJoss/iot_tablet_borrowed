@@ -18,9 +18,12 @@ public class PageBean<T> implements Serializable{
 	private String endTime;
 	@ApiModelProperty(value="借出用户ID",required = true,example = "4600072255")
 	private String userID;
+	@ApiModelProperty(value="借出用户名称",required = true,example = "维康")
+	private String userName;
 	@ApiModelProperty(value="借用状态",example = "1：待借用、2：借用中、3：完结、4：异常、5：取消",required = false)
 	private List<String> borrowedStatusList;
-	
+	@ApiModelProperty(value="借用状态",example = "1：待借用、2：借用中、3：完结、4：异常、5：取消",required = false)
+	private String borrowedStatus;
 	@ApiModelProperty(value="当前页数",example = "1")
     private int pageNum; //当前页数
 	@ApiModelProperty(value="每页显示数",example = "10")
@@ -74,12 +77,28 @@ public class PageBean<T> implements Serializable{
 		this.userID = userID;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	public List<String> getBorrowedStatusList() {
 		return borrowedStatusList;
 	}
 
 	public void setBorrowedStatusList(List<String> borrowedStatusList) {
 		this.borrowedStatusList = borrowedStatusList;
+	}
+
+	public String getBorrowedStatus() {
+		return borrowedStatus;
+	}
+
+	public void setBorrowedStatus(String borrowedStatus) {
+		this.borrowedStatus = borrowedStatus;
 	}
 
 	public int getPageNum() {

@@ -6,7 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.redisson.api.RBucket;
 import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,8 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 	private IDistributedLock distributedLock;
 	@Autowired
 	private RedisProperties redisProperties;
-
+	@Resource
+    private RedissonClient redissonClient;
 	
 	private IotBrorroTabDTO getHalfOfDayTabletApplayNum(IotTablBorroDTO iotTablBorroDTO) {
 		try {
@@ -140,25 +143,32 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 	
 	private boolean judgeHalfOfDayTabletNum(IotTablBorroDTO iotTablBorroDTO) {
 		try {
+			int borrowNum = iotTablBorroDTO.getBorrowNum();
+			// 缓存数量
+		    RBucket<Integer> bucketSum = redissonClient.getBucket(IoTDevUtil.TABLET_SUM);
+			int TABLET_SUM =(bucketSum == null ? 0 : bucketSum.get());
 			IotBrorroTabDTO iotBrorroTabDTO = this.getHalfOfDayTabletApplayNum(iotTablBorroDTO);
 			if (iotBrorroTabDTO == null) {
-				return true;
+				if (borrowNum <= TABLET_SUM) {
+					return true;
+				}else {
+					return false;
+				}				
 			}
 			Integer allDayNum = iotBrorroTabDTO.getAllDayNum() == null ? 0:iotBrorroTabDTO.getAllDayNum();
 			Integer mornDayNum = iotBrorroTabDTO.getMornDayNum()== null ? 0:iotBrorroTabDTO.getMornDayNum();
 			Integer afterDayNum = iotBrorroTabDTO.getAfterDayNum()== null ? 0:iotBrorroTabDTO.getAfterDayNum();
 			int overNum = 0; 
 			switch (iotTablBorroDTO.getBorrowTime()) {
-					case IoTDevUtil.MORN_DAY:
-						overNum = IoTDevUtil.TABLET_SUM - (allDayNum + mornDayNum) ;
+					case IoTDevUtil.MORN_DAY:						
+						overNum = TABLET_SUM - (allDayNum + mornDayNum) ;
 						break;
 					case IoTDevUtil.AFTER_DAY:
-						overNum = IoTDevUtil.TABLET_SUM - (allDayNum + afterDayNum) ;
+						overNum = TABLET_SUM - (allDayNum + afterDayNum) ;
 						break;				
 					default:
 						break;
 			}
-			int borrowNum = iotTablBorroDTO.getBorrowNum();
 			if (borrowNum <= overNum) {
 				return true;
 			}else {
@@ -197,16 +207,24 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 	
 	private boolean judgeALLOfDayTabletNum(IotTablBorroDTO iotTablBorroDTO) {
 		try {
+			int borrowNum = iotTablBorroDTO.getBorrowNum();
+			// 缓存数量
+		    RBucket<Integer> bucketSum = redissonClient.getBucket(IoTDevUtil.TABLET_SUM);
+			int TABLET_SUM =(bucketSum == null ? 0 : bucketSum.get());
 			IotBrorroTabDTO iotBrorroTabDTO = this.getAllOfDayTabletApplayNum(iotTablBorroDTO);
 			if (iotBrorroTabDTO == null) {
-				return true;
+				if (borrowNum <= TABLET_SUM) {
+					return true;
+				}else {
+					return false;
+				}
+				
 			}
 			Integer allDayNum = iotBrorroTabDTO.getAllDayNum() == null ? 0:iotBrorroTabDTO.getAllDayNum();
 			Integer mornDayNum = iotBrorroTabDTO.getMornDayNum()== null ? 0:iotBrorroTabDTO.getMornDayNum();
 			Integer afterDayNum = iotBrorroTabDTO.getAfterDayNum()== null ? 0:iotBrorroTabDTO.getAfterDayNum();
 			int max = Math.max(mornDayNum, afterDayNum);
-			int overNum = IoTDevUtil.TABLET_SUM - (allDayNum + max);
-			int borrowNum = iotTablBorroDTO.getBorrowNum();
+			int overNum = TABLET_SUM - (allDayNum + max);	
 			if (borrowNum <= overNum) {
 				return true;
 			}else {

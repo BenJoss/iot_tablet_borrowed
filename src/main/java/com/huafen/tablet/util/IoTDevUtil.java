@@ -31,6 +31,12 @@ public class IoTDevUtil {
 	 */
 	public final static String  RETURN_STATE="3";
 	
+	/**
+	 * 平板状态：1：启用、2：禁用
+	 */
+	public final static String  ENABLE_STATE="1";
+	
+	public final static String  DISABLE_STATE="2";
 	
 	public final static String  ALL_DAY="全天";
 	
@@ -50,7 +56,9 @@ public class IoTDevUtil {
 	
 	public final static Integer TRY_NUM = 3;
 	
-	public final static Integer TABLET_SUM = 30;
+	// public final static Integer TABLET_SUM = 30;
+	
+	public final static String  TABLET_SUM = "TABLET_SUM";
 	
 	public final static String[] arr = new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 	

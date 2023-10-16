@@ -9,11 +9,19 @@ import io.swagger.annotations.ApiModelProperty;
 public class BorrowHisParam implements Serializable{
 
 	private static final long serialVersionUID = 2928875180457681707L;
+	
+	private int startNum;
 	@ApiModelProperty(value="结束天数",required = true,example = "7")
 	private int endDayNum;
 	@ApiModelProperty(value="显示数量",required = true,example = "30")
 	private int showNum;
 	
+	public int getStartNum() {
+		return startNum;
+	}
+	public void setStartNum(int startNum) {
+		this.startNum = startNum;
+	}
 	public int getEndDayNum() {
 		return endDayNum;
 	}

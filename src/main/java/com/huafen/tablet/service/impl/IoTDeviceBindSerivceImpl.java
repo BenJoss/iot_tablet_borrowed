@@ -204,7 +204,23 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 				  }else {
 					  bucket.set(item,RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
 				}
+			}	
+			// 删除 禁用状态的平板
+			Iterator<IotTabletDTO>  iterator = iotTabletDTO.iterator();
+			while (iterator.hasNext()) {
+				  IotTabletDTO  item = iterator.next();
+				  if (IoTDevUtil.DISABLE_STATE.equals(item.getTabletState())) {
+					  iterator.remove();
+				}
 			}
+			// 缓存数量
+			RBucket<Integer> bucketSum = redissonClient.getBucket(IoTDevUtil.TABLET_SUM);
+			if (!redissonClient.getBucket(IoTDevUtil.TABLET_SUM).isExists()) {
+				bucketSum.set(iotTabletDTO.size(),RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
+			}else {
+				bucketSum.set(iotTabletDTO.size(),RedisUtil.DEFAULT_TABLET,TimeUnit.DAYS);
+			}
+			
 		} catch (Exception e) {
 			logger.error("异常", e.getMessage());
 		}

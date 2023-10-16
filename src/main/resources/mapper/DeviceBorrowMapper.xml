@@ -5,6 +5,46 @@
       
 <mapper namespace="com.huafen.tablet.mapper.DeviceBorrowMapper">
 
+	<resultMap type="com.huafen.tablet.model.his.IotCurHisAllDTO" id="countCurentRetultMap">
+		<result property="alldayNum" column="ALL_DAY_NUM" />
+	    <result property="mornNum" column="MORN_DAY_NUM" />
+	    <result property="afterNum" column="AFTER_DAY_NUM" />
+	</resultMap>
+
+	<resultMap type="com.huafen.tablet.model.his.IotCurentHisDTO" id="curentHisRetultMap">
+		<result property="borrowNum" column="BORROW_NUM" />
+	    <result property="userName" column="USER_NAME" />
+	    <result property="startTime" column="BORROW_START_TIME" />	
+	    <result property="endTime" column="BORROW_END_TIME" />	
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />	
+	</resultMap>
+	
+	<resultMap type="com.huafen.tablet.model.his.IotBorrowHisDTO" id="borrowPageRetultMap">
+		<result property="roomID" column="ROOM_ID" />
+		<result property="roomName" column="ROOM_NAME" />
+		<result property="meetID" column="MEET_ID" />
+		<result property="meetName" column="MEET_NAME" />
+	    <result property="verifyCode" column="VERIFY_CODE" />
+	    <result property="borrowNum" column="BORROW_NUM" />
+	    <result property="userName" column="USER_NAME" />
+	    <result property="borrowTime" column="BORROW_TIME" />
+	    <result property="returnTime" column="RETURN_TIME" />
+	    <result property="returnNum" column="RETURN_NUM" />
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />
+	</resultMap>
+	
+	<resultMap type="com.huafen.tablet.model.meet.CallRmStatDTO" id="callRmStatMap">
+	    <result property="roomID" column="ROOM_ID" />
+	    <result property="roomName" column="ROOM_NAME" />
+	    <result property="meetID" column="MEET_ID" />
+	    <result property="meetName" column="MEET_NAME" />
+	    <result property="meetInfo" column="MEET_CONTENT" />
+	    <result property="meetTime" column="MEET_TIME" />
+	    <result property="meetStarTime" column="MEET_STRTIME" />
+	    <result property="meetEndTime" column="MEET_ENDTIME" />
+	    <result property="nowTime" column="NOW_TIME" />
+	</resultMap>
+
 	<resultMap type="com.huafen.tablet.model.his.IotBorrowHisDTO" id="borrowHisRetultMap">
 		<result property="roomID" column="ROOM_ID" />
 		<result property="roomName" column="ROOM_NAME" />
@@ -17,6 +57,18 @@
 	    <result property="endTime" column="BORROW_END_TIME" />
 	</resultMap>
 	
+    <resultMap type="com.huafen.tablet.model.apply.IotTablBorroCahe" id="borrowHisCacheMap">
+		<result property="meetName" column="MEET_NAME" />
+		<result property="roomName" column="ROOM_NAME" />
+		<result property="verifyCode" column="VERIFY_CODE" />
+		<result property="borrowNum" column="BORROW_NUM" />
+	    <result property="userName" column="USER_NAME" />
+	    <result property="borrowedStatus" column="BORROWED_STATUS" />
+	    <result property="userName" column="USER_NAME" />
+	    <result property="borrowTime" column="BORROW_TIME" />
+	    <result property="returnNum" column="RETURN_NUM" />
+	    <result property="returnTime" column="RETURN_TIME" />
+	</resultMap>
 	
 	<resultMap type="com.huafen.tablet.model.iot.IotBorRetuDTO" id="borrowRetultMap">
 	    <result property="verifyCode" column="VERIFY_CODE" />
@@ -45,6 +97,139 @@
 	    <result property="verifyCode" column="VERIFY_CODE" />
 	</resultMap>
 
+   <select id="queryCurentHisRetulInfo" resultMap="curentHisRetultMap" parameterType="com.huafen.tablet.model.param.IotCurParam">
+			SELECT
+				t.ROOM_ID,
+				t.MEET_ID,
+				( SELECT a.ROOM_NAME FROM t_call_service_room a WHERE a.ROOM_ID = t.ROOM_ID LIMIT 1 ) AS ROOM_NAME,
+				( SELECT a.MEET_NAME FROM t_call_service_meet a WHERE a.MEET_ID = t.MEET_ID LIMIT 1 ) AS MEET_NAME,
+				VERIFY_CODE,
+				BORROW_NUM,
+				USER_NAME,
+			CASE
+					t.BORROWED_STATUS 
+					WHEN '1' THEN
+					'借用' 
+					WHEN '2' THEN
+					'借用中' 
+					WHEN '3' THEN
+					'完结' 
+					WHEN '4' THEN
+					'异常' 
+					WHEN '5' THEN
+					'取消' ELSE '其他' 
+				END BORROWED_STATUS,
+				date_format( START_TIME, '%Y-%m-%d %T' ) AS BORROW_START_TIME,
+				date_format( END_TIME, '%Y-%m-%d %T' ) AS BORROW_END_TIME 
+			FROM
+				t_iot_device_borrow t 
+			WHERE
+				1 = 1 
+				<if test = "borrowTime == '全天'">
+				  AND t.ALLDAY_TIME IS NOT NULL 
+				</if>
+				<if test = "borrowTime == '上午'">
+				  AND t.MORN_TIME IS NOT NULL 
+				</if>
+				<if test = "borrowTime == '下午'">
+				  AND t.AFTER_TIME IS NOT NULL 
+				</if>
+				<if test = "borrowedStatus != null and borrowedStatus != ''">
+			      AND t.BORROWED_STATUS = #{borrowedStatus}	 
+				</if>
+				AND DATEDIFF(
+				t.CREATE_TIME,
+				NOW()) >= 0	
+   </select>
+	
+   <select id="countCurentHisRetulInfo" resultMap="countCurentRetultMap" parameterType="com.huafen.tablet.model.param.IotCurParam">
+		SELECT
+			( SELECT SUM( BORROW_NUM ) FROM t_iot_device_borrow WHERE ALLDAY_TIME = STR_TO_DATE( CONCAT( date_format( NOW(), '%Y-%m-%d' ), ' ', '00:00:00' ), "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS ALL_DAY_NUM,
+			( SELECT SUM( BORROW_NUM ) FROM t_iot_device_borrow WHERE MORN_TIME = STR_TO_DATE( CONCAT( date_format( NOW(), '%Y-%m-%d' ), ' ', '08:00:00' ), "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS MORN_DAY_NUM,
+			( SELECT SUM( BORROW_NUM ) FROM t_iot_device_borrow WHERE AFTER_TIME = STR_TO_DATE( CONCAT( date_format( NOW(), '%Y-%m-%d' ), ' ', '14:00:00' ), "%Y-%m-%d %H:%i:%s" ) FOR UPDATE ) AS AFTER_DAY_NUM 
+		FROM
+		DUAL		
+   </select>
+	
+   <select id="countBorrowByPage" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.PageBean">
+		SELECT
+			COUNT( 1 ) 
+		FROM
+			t_iot_device_borrow a 
+			WHERE 1=1
+			AND a.START_TIME <![CDATA[>= ]]> STR_TO_DATE( #{startTime}, '%Y-%m-%d %H:%i:%s' ) 
+			AND a.START_TIME <![CDATA[<= ]]> STR_TO_DATE( #{endTime}, '%Y-%m-%d %H:%i:%s' ) 
+			 <if test = "borrowedStatus != null and borrowedStatus != ''">
+				 AND a.BORROWED_STATUS = #{borrowedStatus}	
+			 </if>
+			 <if test = "userName != null and userName != ''">				 
+			     AND a.USER_NAME LIKE #{userName}"%"
+			 </if>
+											
+   </select>  
+
+   <select id="queryBorrowInfoPageList" resultMap="borrowPageRetultMap" parameterType="com.huafen.tablet.model.iot.PageBean">
+				SELECT
+					( SELECT c.ROOM_NAME FROM t_call_service_room c WHERE c.ROOM_ID = a.ROOM_ID LIMIT 1 ) AS ROOM_NAME,
+					( SELECT c.MEET_NAME FROM t_call_service_meet c WHERE c.MEET_ID = a.MEET_ID LIMIT 1 ) AS MEET_NAME,
+					a.VERIFY_CODE,
+					a.BORROW_NUM,
+					a.USER_NAME,
+				   CASE
+						a.BORROWED_STATUS 
+						WHEN '1' THEN '借用'
+						WHEN '2' THEN '借用中'
+						WHEN '3' THEN '完结'
+						WHEN '4' THEN '异常'
+						WHEN '5' THEN '取消'
+						 ELSE '其他' 
+					END BORROWED_STATUS,
+					date_format( a.START_TIME, '%Y-%m-%d %T' ) AS BORROW_TIME,
+					b.RETURN_NUM,
+					date_format( b.RETURN_TIME, '%Y-%m-%d %T' ) AS RETURN_TIME 
+				FROM
+					t_iot_device_borrow a
+					LEFT JOIN t_iot_device_return b ON a.VERIFY_CODE = b.VERIFY_CODE 
+				WHERE
+					1 = 1 
+				AND a.START_TIME <![CDATA[>= ]]> STR_TO_DATE( #{startTime}, '%Y-%m-%d %H:%i:%s' ) 
+				AND a.START_TIME <![CDATA[<= ]]> STR_TO_DATE( #{endTime}, '%Y-%m-%d %H:%i:%s' ) 
+				 <if test = "borrowedStatus != null and borrowedStatus != ''">
+					 AND a.BORROWED_STATUS = #{borrowedStatus}	
+				 </if>
+				 <if test = "userName != null and userName != ''">				 
+				     AND a.USER_NAME LIKE #{userName}"%"
+				 </if>
+				 LIMIT #{start}, #{pageSize}						 
+   </select>
+   
+	<select id="queryCallRmStatInfo" resultMap="callRmStatMap" parameterType="com.huafen.tablet.model.param.BorrowHisParam">
+					SELECT
+					 ROOM_ID,
+					 (SELECT ROOM_NAME FROM t_call_service_room b WHERE b.ROOM_ID=t.ROOM_ID LIMIT 1) AS ROOM_NAME,
+					 MEET_ID,
+					 MEET_NAME,
+					 MEET_CONTENT,
+					 MEET_APPLY,
+					 MEET_ADDR,
+					 date_format( MEET_STRTIME, '%Y-%m-%d %T' ) AS MEET_STRTIME,
+					 date_format( MEET_ENDTIME, '%Y-%m-%d %T' ) AS MEET_ENDTIME,
+					 date_format(NOW(), '%Y-%m-%d %T') AS NOW_TIME,
+					 MEET_TIME
+					 FROM
+					t_call_service_meet t
+					WHERE 1=1
+					AND DATEDIFF(
+									t.MEET_STRTIME,
+								NOW())   <![CDATA[ <= ]]> #{endDayNum}
+								
+									AND DATEDIFF(
+									t.MEET_STRTIME,
+									NOW())  <![CDATA[ >= ]]> #{startNum}
+										ORDER BY t.MEET_STRTIME DESC
+										LIMIT #{showNum}
+	   </select>
+
     <select id="queryBorrowHisRetultInfo" resultMap="borrowHisRetultMap" parameterType="com.huafen.tablet.model.param.BorrowHisParam">
 		SELECT
 		  t.ROOM_ID,
@@ -67,7 +252,7 @@
 				AND DATEDIFF(
 				t.CREATE_TIME,
 				NOW()) <![CDATA[ >=0 ]]>
-				ORDER BY t.CREATE_TIME DESC
+				ORDER BY t.START_TIME DESC
 				LIMIT #{showNum}
 	</select>
 	
@@ -96,6 +281,32 @@
 				ORDER BY a.CREATE_TIME DESC
     </select>
 
+	<select id="countBorrowMaxNum" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.param.IotBorrowHisParam">
+		SELECT MAX(ID) FROM t_iot_device_borrow 
+	</select>
+
+    <select id="queryBorrowHisCacheInfo" resultMap="borrowHisCacheMap" parameterType="com.huafen.tablet.model.param.IotBorrowHisParam">
+			SELECT
+				( SELECT c.ROOM_NAME FROM t_call_service_room c WHERE c.ROOM_ID = a.ROOM_ID LIMIT 1 ) AS ROOM_NAME,
+				( SELECT c.MEET_NAME FROM t_call_service_meet c WHERE c.MEET_ID = a.MEET_ID LIMIT 1 ) AS MEET_NAME,
+				a.VERIFY_CODE,
+				a.BORROW_NUM,
+				a.USER_NAME,
+				a.BORROWED_STATUS,
+				date_format( a.START_TIME, '%Y-%m-%d %T' ) AS BORROW_TIME,
+				b.RETURN_NUM,
+				date_format( b.RETURN_TIME, '%Y-%m-%d %T' ) AS RETURN_TIME
+			FROM
+				t_iot_device_borrow a
+				LEFT JOIN t_iot_device_return b ON a.VERIFY_CODE = b.VERIFY_CODE 
+			WHERE
+				1 = 1 
+				AND a.id BETWEEN #{startNum} 
+				AND #{endNum} 
+			ORDER BY
+				a.id ASC 
+				LIMIT #{limitNum}
+    </select>
 
  <select id="countCodeInfoPage" resultType="java.lang.Integer" parameterType="com.huafen.tablet.model.iot.PageBean">
 			SELECT
