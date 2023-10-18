@@ -69,6 +69,11 @@ public class IoTDevUtil {
 	public final static String  IOTDEV_RESULT="data";
 	
 	public final static String  RETURN_STATE_NUM="returnNum";
+	
+	public final static String  T_IOT_DEVICE_BORROW="t_iot_device_borrow";
+	
+	public final static String  PARTI_TION="partition";
+	
    /** 
     * @Description: 创建Token，怕麻烦的可以直接生成UUID作为toekn的key和value 
     * @Date: 2020/1/8 0008 

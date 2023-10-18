@@ -159,6 +159,9 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 	@Override
 	public PageBean<IotBorrowHisDTO> queryBorrowInfoPageList(PageBean<IotBorrowHisDTO> pageBean) {
 			try {
+				if ( pageBean.getPageNum() < 0 ) {
+					return pageBean;
+				}
 				int totalRecord = 0;
 				if (pageBean.getTotalRecord() == 0) {
 					totalRecord = deviceBorrowMapper.countBorrowByPage(pageBean); 
@@ -180,12 +183,17 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			return pageBean;
 	}
 
+	
 	@Override
 	public ReposeDTO<IotCurHisAllDTO> queryCurentHisRetulInfoSerivce(IotCurParam iotCurParam) {
 		ReposeDTO<IotCurHisAllDTO>  reposeDTO = new ReposeDTO<IotCurHisAllDTO>();
 	    try {
 	    	IotCurHisAllDTO iotCurHisAllDTO = new IotCurHisAllDTO();
 	    	IotCurHisAllDTO  iotCurHisAll = deviceBorrowMapper.countCurentHisRetulInfo(iotCurParam);
+	    	if (iotCurHisAll == null) {
+	    		reposeDTO.setRepCode(RepCode.SUCCESS_CODE);
+				return reposeDTO;
+			}
 			// 缓存数量
 		    RBucket<Integer> bucketSum = redissonClient.getBucket(IoTDevUtil.TABLET_SUM);
 			int TABLET_SUM =(bucketSum == null ? 0 : bucketSum.get());
@@ -202,6 +210,15 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 		    	iotCurHisAllDTO.setAfterNum(overNextNum >= 0 ? overNextNum:0);
 			}
 	    	List<IotCurentHisDTO>  dataList = deviceBorrowMapper.queryCurentHisRetulInfo(iotCurParam);
+	    	for (IotCurentHisDTO item:dataList) {
+				  if (item.getStartTime() == null) {
+					  item.setStartTime("");
+				 }
+				  if (item.getEndTime() == null) {
+					  item.setEndTime("");
+				}
+				
+			}
 	    	iotCurHisAllDTO.setData(dataList);
 	    	reposeDTO.setResult(iotCurHisAllDTO);
 	    	reposeDTO.setRepCode(RepCode.SUCCESS_CODE);
@@ -210,6 +227,16 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			logger.error(e.getMessage());
 		}
 		return reposeDTO;
+	}
+
+	@Override
+	public PageBean<IotBorrowHisDTO> queryBorrowInfoPageListByCache(PageBean<IotBorrowHisDTO> pageBean) {
+		try {
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return pageBean;
 	}
 
 }

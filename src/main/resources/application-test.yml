@@ -3,6 +3,10 @@ server:
     context-path: /tablet-borrowed-service
   port: 8082
 spring:
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:/ehcache.xml
   application:
     name: tablet-service
     # 数据库链接配置

@@ -29,5 +29,7 @@ public interface IoTDeviceBorrReturnRecodeSerivce {
     
     public PageBean<IotBorrowHisDTO> queryBorrowInfoPageList(PageBean<IotBorrowHisDTO> pageBean);
     
+    public PageBean<IotBorrowHisDTO> queryBorrowInfoPageListByCache(PageBean<IotBorrowHisDTO> pageBean);
+    
     public ReposeDTO<IotCurHisAllDTO> queryCurentHisRetulInfoSerivce(IotCurParam iotCurParam);
 }

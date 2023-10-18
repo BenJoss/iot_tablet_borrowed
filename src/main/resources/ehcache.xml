@@ -44,8 +44,8 @@
  <cache name="borrowCache" 
  	maxElementsInMemory="100" 
  	eternal="false" 
- 	timeToIdleSeconds="120" 
- 	timeToLiveSeconds="120" 
+ 	timeToIdleSeconds="0" 
+ 	timeToLiveSeconds="86400" 
  	maxElementsOnDisk="0" 
  	overflowToDisk="true" 
  	memoryStoreEvictionPolicy="LRU" />
@@ -53,8 +53,8 @@
   <cache name="meetingCache" 
  	maxElementsInMemory="100" 
  	eternal="false" 
- 	timeToIdleSeconds="120" 
- 	timeToLiveSeconds="120" 
+ 	timeToIdleSeconds="0" 
+ 	timeToLiveSeconds="86400" 
  	maxElementsOnDisk="0" 
  	overflowToDisk="true" 
  	memoryStoreEvictionPolicy="LRU" />

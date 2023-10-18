@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.huafen.tablet.model.apply.IotTablBorroCahe;
 import com.huafen.tablet.model.apply.IotTablBorroCode;
+import com.huafen.tablet.model.cache.IotBorrowDTO;
 import com.huafen.tablet.model.his.IotBorrowHisDTO;
 import com.huafen.tablet.model.his.IotCurHisAllDTO;
 import com.huafen.tablet.model.his.IotCurentHisDTO;
@@ -16,6 +17,7 @@ import com.huafen.tablet.model.meet.CallRmStatDTO;
 import com.huafen.tablet.model.param.BorrowHisParam;
 import com.huafen.tablet.model.param.IotBorrowHisParam;
 import com.huafen.tablet.model.param.IotCurParam;
+import com.huafen.tablet.model.param.PartParam;
 import com.huafen.tablet.model.param.TabletRevertParam;
 
 @Mapper
@@ -51,4 +53,6 @@ public interface DeviceBorrowMapper {
 	List<IotBorrowHisDTO>  queryBorrowInfoPageList(PageBean<IotBorrowHisDTO> pageBean);
 	
 	List<IotCurentHisDTO>  queryCurentHisRetulInfo(IotCurParam iotCurParam);
+	
+	IotBorrowDTO countBorrowMaxAndMinNum(PartParam partParam);
 }

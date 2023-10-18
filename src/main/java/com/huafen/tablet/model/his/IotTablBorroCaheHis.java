@@ -11,12 +11,22 @@ public class IotTablBorroCaheHis implements Serializable{
 
 	private List<IotTablBorroCahe> iotTablBorroCaheList;
 
+	private List<String> partitionList;
+	
 	public List<IotTablBorroCahe> getIotTablBorroCaheList() {
 		return iotTablBorroCaheList;
 	}
 
 	public void setIotTablBorroCaheList(List<IotTablBorroCahe> iotTablBorroCaheList) {
 		this.iotTablBorroCaheList = iotTablBorroCaheList;
+	}
+
+	public List<String> getPartitionList() {
+		return partitionList;
+	}
+
+	public void setPartitionList(List<String> partitionList) {
+		this.partitionList = partitionList;
 	}
 	
 	

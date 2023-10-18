@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huafen.tablet.mapper.DevicePartitionMapper">
+
+	<resultMap type="com.huafen.tablet.model.partition.PartitionDTO" id="prtitionRetultMap">
+		<result property="partTable" column="PART_TABLE" />
+	    <result property="partName" column="PART_NAME" />
+	    <result property="partTime" column="PART_TIME" />
+	</resultMap>
+	
+	
+	<update id="alterTablePartition" parameterType="com.huafen.tablet.model.partition.PartitionDTO">
+		ALTER TABLE  ${partTable}  ADD PARTITION ( PARTITION ${partName} VALUES LESS THAN (${partTime}) )
+    </update>
+
+    <insert id="insertTablePartition" parameterType="com.huafen.tablet.model.partition.PartitionDTO">
+		INSERT INTO `t_iot_partition` (  `PART_NAME`, `PART_TABLE`, `PART_TIME`, `CREATE_TIME`, `UPDATE_TIME`, `BACK_COL1`, `BACK_COL2`, `BACK_COL3`, `BACK_COL4`, `BACK_COL5`, `BACK_COL6` )
+		VALUES
+			( #{partName}, #{partTable}, #{partTime}, now(), now(), NULL, NULL, NULL, NULL, NULL, NULL )
+    </insert>
+
+    <select id="queryTablePartitionInfo" resultMap="prtitionRetultMap" parameterType="com.huafen.tablet.model.param.PartParam">
+			SELECT
+			        t.PART_NAME,
+					t.PART_TABLE,
+					t.PART_TIME
+			FROM  t_iot_partition t
+			WHERE 1=1
+			AND t.PART_TABLE= #{partTable}
+			AND t.PART_TIME= #{partTime}
+			AND t.PART_NAME= #{partName}
+			LIMIT 1		
+    </select>
+    
+    <select id="queryPartitionInfo" resultMap="prtitionRetultMap" parameterType="com.huafen.tablet.model.param.PartParam">
+					SELECT
+				        t.PART_NAME,
+						t.PART_TABLE,
+						t.PART_TIME
+					FROM  t_iot_partition t
+					WHERE 1=1
+					AND t.PART_TABLE= #{partTable}
+					ORDER BY t.CREATE_TIME DESC
+					
+    </select>
+
+
+
+</mapper>
