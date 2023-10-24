@@ -65,7 +65,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			}
 		 return	deviceMapper.getTabletApplayNum(tabletApplayParam);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg("查询借用总数失败");
 			throw exception;
@@ -101,7 +101,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			}
 			return false;
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -119,7 +119,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			 String verifyCode = this.prodVerifyCode();
 			 iotTablBorroDTO.setVerifyCode(verifyCode);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -175,7 +175,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 				return false;
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -198,7 +198,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			tabletApplayParam.setAfterTime(afterTime);
 		 return	deviceMapper.getTabletApplayNum(tabletApplayParam);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg("查询借用总数失败");
 			throw exception;
@@ -231,7 +231,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 				return false;
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -250,7 +250,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			 iotOperLogDTO.setOperateCont("借用申请"+iotTablBorroDTO.getBorrowNum()+"平板");
 			 deviceMapper.insertIotOperLog(iotOperLogDTO);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -287,7 +287,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			}
 			return false;
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -313,7 +313,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			 deviceMapper.insertIotOperLog(iotOperLogDTO);
 			return true;
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			DeviceException exception = new DeviceException();
 			exception.setMsg(e.getMessage());
 			throw exception;
@@ -328,7 +328,7 @@ public class IoTDeviBorroSerivceImpl implements IoTDeviBorroSerivce {
 			 repDTO.setRepCode(RepCode.SUCCESS_CODE);
 			 repDTO.setResult(iotTablBorroHisList);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}

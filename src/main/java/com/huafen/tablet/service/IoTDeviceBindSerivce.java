@@ -13,6 +13,8 @@ public interface IoTDeviceBindSerivce {
 	
 	public RepDTO bindDeviceTopicRedisCahce(IotBorroFlowDTO iotBorroFlowDTO);
 	
+	public RepDTO resetBindDeviceInfoSerivce(IotBorroFlowDTO iotBorroFlowDTO);
+	
 	public RepDTO pushDeviceTopicByRedis(IotBorroFlowDTO iotBorroFlowDTO);
 	
 	public void loadDeviceInfo();

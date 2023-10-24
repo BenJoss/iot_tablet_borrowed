@@ -29,4 +29,17 @@ public class IoTDeviceTopicSerivceImpl implements IoTDeviceTopicSerivce {
 		
 	}
 
+	@Override
+	public void CloseScannDevice(IotBorroFlowDTO iotBorroFlowDTO) {
+		try {
+        	String closeTopic = iotBorroFlowDTO.getCloseTopic();
+        	int qos = iotBorroFlowDTO.getQos();
+        	String message = iotBorroFlowDTO.getMessage();
+			providerClient.publish(qos, false, closeTopic, message);
+		} catch (Exception e) {
+			log.error("异常",e.getMessage());
+		}
+		
+	}
+
 }

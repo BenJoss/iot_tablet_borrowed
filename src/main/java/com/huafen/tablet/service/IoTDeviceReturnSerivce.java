@@ -18,5 +18,7 @@ public interface IoTDeviceReturnSerivce {
 	
 	public RepDTO bindDeviceTopicRedisCahce(IotBorroFlowDTO iotBorroFlowDTO);
 	
+	public RepDTO resetDeviceBindInfo(IotBorroFlowDTO iotBorroFlowDTO);
+	
 	public RepDTO returnIotTablBorroInfo(IotDeviReturnDTO iotDeviReturnDTO);
 }

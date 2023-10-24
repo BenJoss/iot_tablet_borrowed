@@ -43,7 +43,7 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 				repDTO.setRepMsg("");
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -57,7 +57,7 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 		} catch (Exception e) {
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg("");
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -77,7 +77,7 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 		} catch (Exception e) {
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg("");
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -95,7 +95,7 @@ public class IotBabletEditServiceImpl implements IotBabletEditService{
 		} catch (Exception e) {
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg("");
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}

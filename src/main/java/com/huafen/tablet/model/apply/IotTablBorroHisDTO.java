@@ -16,15 +16,18 @@ public class IotTablBorroHisDTO implements Serializable{
 	private String roomName;
 	@ApiModelProperty(value="会议名称",example = "人资部会议")
 	private String meetName;
-	@ApiModelProperty(value="会议时间",example = "2023-08-07 10:22:54")
-	private String meetTime;
+	@ApiModelProperty(value="会议开始时间",example = "2023-08-07 10:22:54")
+	private String meetStartTime;
+	@ApiModelProperty(value="会议结束时间",example = "2023-08-07 10:30:54")
+	private String meetEndTime;
 	@ApiModelProperty(value="借出用户名称",example = "维康")
 	private String userName;
 	@ApiModelProperty(value="借用数量",example = "3")
 	private int borrowNum;
-	@ApiModelProperty(value="借用时间",example = "6月30日 9:00-12:00")
-	private String borrowTime;
-	
+	@ApiModelProperty(value="借用开始时间",example = "6月30日 9:00-12:00")
+	private String borrowStartTime;
+	@ApiModelProperty(value="借用结束时间",example = "6月30日 9:00-12:00")
+	private String borrowEndTime;
 	
 	public String getRoomName() {
 		return roomName;
@@ -38,11 +41,18 @@ public class IotTablBorroHisDTO implements Serializable{
 	public void setMeetName(String meetName) {
 		this.meetName = meetName;
 	}
-	public String getMeetTime() {
-		return meetTime;
+	
+	public String getMeetStartTime() {
+		return meetStartTime;
 	}
-	public void setMeetTime(String meetTime) {
-		this.meetTime = meetTime;
+	public void setMeetStartTime(String meetStartTime) {
+		this.meetStartTime = meetStartTime;
+	}
+	public String getMeetEndTime() {
+		return meetEndTime;
+	}
+	public void setMeetEndTime(String meetEndTime) {
+		this.meetEndTime = meetEndTime;
 	}
 	public String getUserName() {
 		return userName;
@@ -56,12 +66,19 @@ public class IotTablBorroHisDTO implements Serializable{
 	public void setBorrowNum(int borrowNum) {
 		this.borrowNum = borrowNum;
 	}
-	public String getBorrowTime() {
-		return borrowTime;
+	public String getBorrowStartTime() {
+		return borrowStartTime;
 	}
-	public void setBorrowTime(String borrowTime) {
-		this.borrowTime = borrowTime;
+	public void setBorrowStartTime(String borrowStartTime) {
+		this.borrowStartTime = borrowStartTime;
 	}
+	public String getBorrowEndTime() {
+		return borrowEndTime;
+	}
+	public void setBorrowEndTime(String borrowEndTime) {
+		this.borrowEndTime = borrowEndTime;
+	}
+
 	
 	
 

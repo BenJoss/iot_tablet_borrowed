@@ -73,6 +73,19 @@ public class IotBabletBindCrtl {
 	@ApiResponses( value = { 
 			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
 			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "关闭设备")
+    @PostMapping("/closeScannDevice")
+    @ResponseBody
+	public RepDTO closeScannDevice(@RequestBody IotBorroFlowDTO iotBorroFlowDTO) {
+		ioTDeviceTopicSerivce.CloseScannDevice(iotBorroFlowDTO);
+		RepDTO repDTO = new RepDTO();
+		repDTO.setRepCode(RepCode.SUCCESS_CODE);
+		return repDTO;
+	}
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
     @ApiOperation(value = "取平板绑定操作")
     @PostMapping("/takeBabletBind")
     @ResponseBody
@@ -81,6 +94,16 @@ public class IotBabletBindCrtl {
 		ioTDeviceBindSerivce.bindIotTablBorroInfo(iotBindTabAllDTO);
 		repDTO.setRepCode(RepCode.SUCCESS_CODE);
     	return repDTO;
+    }
+	
+	@ApiResponses( value = { 
+			@ApiResponse(code = 200, message = "success",response = RepDTO.class),
+			@ApiResponse(code = 1001, message = "error")})
+    @ApiOperation(value = "重置借取流程")
+    @PostMapping("/resetDeviceBind")
+    @ResponseBody
+    public RepDTO resetDeviceBind(@RequestBody IotBorroFlowDTO iotBorroFlowDTO){
+    	return ioTDeviceBindSerivce.resetBindDeviceInfoSerivce(iotBorroFlowDTO);
     }
 	
 	@ApiResponses( value = { 

@@ -68,7 +68,7 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			}
 			repDTO.setRepCode(RepCode.SUCCESS_CODE);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}
@@ -83,7 +83,7 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			repDTO.setRepCode(RepCode.SUCCESS_CODE);
 			repDTO.setResult(iotBorRetuList);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}
@@ -100,7 +100,7 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 			}
 			repDTO.setRepCode(RepCode.SUCCESS_CODE);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}

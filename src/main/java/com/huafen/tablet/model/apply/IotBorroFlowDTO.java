@@ -16,6 +16,8 @@ public class IotBorroFlowDTO implements Serializable{
 	private String verifyCode;
 	@ApiModelProperty(value="打开设备topic",required = true,example = "A2-206/206-RFID-DOWN")
 	private String openTopic;
+	@ApiModelProperty(value="关闭设备topic",required = true,example = "A2-206/206-RFID-DOWN")
+	private String closeTopic;
 	@ApiModelProperty(value="扫描设备topic",required = true,example = "A2-206/206-RFID-UP")
 	private String topic;
 	@ApiModelProperty(value="平板ID",example = "E280689400004020F535A17F")
@@ -45,6 +47,12 @@ public class IotBorroFlowDTO implements Serializable{
 	}
 	public void setOpenTopic(String openTopic) {
 		this.openTopic = openTopic;
+	}
+	public String getCloseTopic() {
+		return closeTopic;
+	}
+	public void setCloseTopic(String closeTopic) {
+		this.closeTopic = closeTopic;
 	}
 	public String getTopic() {
 		return topic;

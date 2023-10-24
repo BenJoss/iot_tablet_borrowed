@@ -29,7 +29,7 @@ public class IoTBrrowoHisSerivceImpl implements IoTBrrowoHisSerivce{
 			reposeDTO.setRepCode(RepCode.SUCCESS_CODE);
 			reposeDTO.setResult(iotBorrowHisList);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			reposeDTO.setRepCode(RepCode.ERROR_CODE);
 			reposeDTO.setRepMsg(e.getMessage());
 		}

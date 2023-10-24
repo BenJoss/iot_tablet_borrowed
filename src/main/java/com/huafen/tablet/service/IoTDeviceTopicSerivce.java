@@ -6,4 +6,6 @@ public interface IoTDeviceTopicSerivce {
 
 	
 	public void OpenScannDevice(IotBorroFlowDTO iotBorroFlowDTO);
+	
+	public void CloseScannDevice(IotBorroFlowDTO iotBorroFlowDTO);
 }

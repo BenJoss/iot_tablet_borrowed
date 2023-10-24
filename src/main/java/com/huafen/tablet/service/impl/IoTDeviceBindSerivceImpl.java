@@ -63,13 +63,34 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 			IotTablBorroHisDTO iotTablBorroHisDTO = deviceMapper.queryBindBorrowInfo(tabletRevertParam);
 			 if (iotTablBorroHisDTO != null ) {
 				 repDTO.setRepCode(RepCode.SUCCESS_CODE);
+				 if (iotTablBorroHisDTO.getBorrowEndTime() == null) {
+					 iotTablBorroHisDTO.setBorrowEndTime("");
+				}
+				 if (iotTablBorroHisDTO.getBorrowStartTime() == null) {
+					 iotTablBorroHisDTO.setBorrowStartTime("");
+				}
+				 if (iotTablBorroHisDTO.getMeetEndTime() == null) {
+					 iotTablBorroHisDTO.setMeetEndTime("");
+				}
+				 if (iotTablBorroHisDTO.getMeetStartTime() == null) {
+					 iotTablBorroHisDTO.setMeetStartTime("");
+				}
+				 if (iotTablBorroHisDTO.getMeetName() == null) {
+					 iotTablBorroHisDTO.setMeetName("");
+				}
+				 if (iotTablBorroHisDTO.getRoomName() == null) {
+					 iotTablBorroHisDTO.setRoomName("");
+				}
+				 if (iotTablBorroHisDTO.getUserName() == null) {
+					 iotTablBorroHisDTO.setUserName("");
+				}
 				 repDTO.setResult(iotTablBorroHisDTO);
 			}else {
 				repDTO.setRepCode(RepCode.ERROR_CODE);
 				repDTO.setRepMsg("借还码不存在,请重新输入");
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -83,7 +104,7 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 			RBucket<String> bucket = redissonClient.getBucket(topic, StringCodec.INSTANCE);
 		    bucket.trySet(verifyCode, RedisUtil.DEFAULT_EXPIRE_TIME_SECONDS, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -187,7 +208,7 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 					
 			
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		return repDTO;
 	}
@@ -222,7 +243,7 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 			}
 			
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 		}
 		
 	}
@@ -300,7 +321,7 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 				
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}
@@ -328,7 +349,38 @@ public class IoTDeviceBindSerivceImpl implements IoTDeviceBindSerivce{
 				repDTO.setRepMsg("借还码不存在或已失效,请重新输入");
 			}
 		} catch (Exception e) {
-			logger.error("异常", e.getMessage());
+			logger.error("异常"+ e.getMessage());
+			repDTO.setRepCode(RepCode.ERROR_CODE);
+			repDTO.setRepMsg(e.getMessage());
+		}
+		return repDTO;
+	}
+
+	@Override
+	public RepDTO resetBindDeviceInfoSerivce(IotBorroFlowDTO iotBorroFlowDTO) {
+		RepDTO  repDTO = new RepDTO();  
+		try {
+			String verifyCode = iotBorroFlowDTO.getVerifyCode();
+			if ( verifyCode != null) {
+				//删除借还码对应的zset缓存
+				if (redissonClient.getBucket(verifyCode) != null && redissonClient.getBucket(verifyCode).isExists()) {
+					redissonClient.getBucket(verifyCode).delete();
+				}
+			}
+			String topic = iotBorroFlowDTO.getTopic();
+			if(topic != null) {
+				// 删除 topic 对应 verifyCode
+				if (redissonClient.getBucket(topic)!= null && redissonClient.getBucket(topic).isExists()) {
+					redissonClient.getBucket(topic).delete();
+				}
+				//删除BORRO_TOKEN 推送topic
+				this.removeZSetMember(IoTDevUtil.BORRO_TOKEN, topic);
+				// 删除 ws
+				webSocket.removeWsMsg(topic);
+			}
+			repDTO.setRepCode(RepCode.SUCCESS_CODE);
+		} catch (Exception e) {
+			logger.error("异常: "+ e.getMessage());
 			repDTO.setRepCode(RepCode.ERROR_CODE);
 			repDTO.setRepMsg(e.getMessage());
 		}

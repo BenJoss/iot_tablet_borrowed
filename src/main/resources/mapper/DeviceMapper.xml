@@ -18,9 +18,12 @@
 <resultMap type="com.huafen.tablet.model.apply.IotTablBorroHisDTO" id="borroHisMap">
     <result property="roomName" column="ROOM_NAME" />
     <result property="meetName" column="MEET_NAME" />
+    <result property="meetStartTime" column="MEET_START_NAME" />
+    <result property="meetEndTime" column="MEET_END_NAME" />
     <result property="userName" column="USER_NAME" />
     <result property="borrowNum" column="BORROW_NUM" />
-    <result property="borrowTime" column="BORROW_TIME" />
+    <result property="borrowStartTime" column="BORROW_START_TIME" />
+    <result property="borrowEndTime" column="BORROW_END_TIME" />
 </resultMap>
 
 <resultMap type="com.huafen.tablet.model.iot.IotTabletDTO" id="iotTabletMap">
@@ -75,12 +78,30 @@
     
     <select id="queryBindBorrowInfo" resultMap="borroHisMap" parameterType="com.huafen.tablet.model.param.TabletRevertParam">
                SELECT
-					ROOM_ID AS ROOM_NAME ,
-					MEET_ID AS MEET_NAME,
+					t.ROOM_ID,
+					t.MEET_ID,
+					( SELECT a.ROOM_NAME FROM t_call_service_room a WHERE a.ROOM_ID = t.ROOM_ID LIMIT 1 ) AS ROOM_NAME,
+					( SELECT a.MEET_NAME FROM t_call_service_meet a WHERE a.MEET_ID = t.MEET_ID LIMIT 1 ) AS MEET_NAME,
+					( SELECT date_format(a.MEET_STRTIME,'%Y-%m-%d %T') FROM t_call_service_meet a WHERE a.MEET_ID = t.MEET_ID LIMIT 1 ) AS MEET_START_NAME,
+					( SELECT date_format(a.MEET_ENDTIME,'%Y-%m-%d %T')  FROM t_call_service_meet a WHERE a.MEET_ID = t.MEET_ID LIMIT 1 ) AS MEET_END_NAME,
 					VERIFY_CODE,
 					BORROW_NUM,
 					USER_NAME,
-					date_format(START_TIME,'%Y-%m-%d %T') AS BORROW_TIME
+				CASE
+						t.BORROWED_STATUS 
+						WHEN '1' THEN
+						'待借用' 
+						WHEN '2' THEN
+						'借用中' 
+						WHEN '3' THEN
+						'完结' 
+						WHEN '4' THEN
+						'异常' 
+						WHEN '5' THEN
+						'取消' ELSE '其他' 
+					END BORROWED_STATUS,
+					date_format( START_TIME, '%Y-%m-%d %T' ) AS BORROW_START_TIME,
+					date_format( END_TIME, '%Y-%m-%d %T' ) AS BORROW_END_TIME 
 				FROM
 					t_iot_device_borrow t 
 				WHERE
