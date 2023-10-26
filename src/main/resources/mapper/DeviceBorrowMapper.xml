@@ -143,8 +143,9 @@
 			      AND t.BORROWED_STATUS = #{borrowedStatus}	 
 				</if>
 				AND DATEDIFF(
-				t.CREATE_TIME,
-				NOW()) >= 0	
+				t.START_TIME,
+				NOW()) = 0
+				ORDER BY t.START_TIME ASC
    </select>
 	
    <select id="countCurentHisRetulInfo" resultMap="countCurentRetultMap" parameterType="com.huafen.tablet.model.param.IotCurParam">
@@ -168,7 +169,7 @@
 				 AND a.BORROWED_STATUS = #{borrowedStatus}	
 			 </if>
 			 <if test = "userName != null and userName != ''">				 
-			     AND a.USER_NAME LIKE #{userName}"%"
+			     AND a.USER_NAME LIKE CONCAT( #{userName},'%')
 			 </if>
 											
    </select>  
@@ -203,7 +204,8 @@
 					 AND a.BORROWED_STATUS = #{borrowedStatus}	
 				 </if>
 				 <if test = "userName != null and userName != ''">				 
-				     AND a.USER_NAME LIKE #{userName}"%"
+				     AND a.USER_NAME LIKE CONCAT( #{userName},'%')
+				     
 				 </if>
 				 ORDER BY a.START_TIME DESC
 				 LIMIT #{start}, #{pageSize}						 

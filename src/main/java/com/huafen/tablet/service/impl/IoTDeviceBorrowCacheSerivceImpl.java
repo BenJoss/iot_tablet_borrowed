@@ -184,7 +184,11 @@ public class IoTDeviceBorrowCacheSerivceImpl implements IoTDeviceBorrowCacheSeri
 					List<CallRmStatDTO>  reslut =	this.filterMeetInfo(callRmStatList, meetName, 1);
 					reposeDTO.setResult(reslut);
 				}else {
-					List<CallRmStatDTO> resultCallRmStatList = callRmStatList.subList(0, 100);
+					int size = 100;
+					if (callRmStatList.size() < 100) {
+						 size = callRmStatList.size();
+					}
+					List<CallRmStatDTO> resultCallRmStatList = callRmStatList.subList(0, size);
 					reposeDTO.setResult(resultCallRmStatList);
 				}
 			}

@@ -205,9 +205,10 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 				int overNum = TABLET_SUM - (alldayHisNum + max);
 				iotCurHisAllDTO.setAlldayNum(overNum >= 0 ? overNum:0);
 				//
-				int overNextNum = TABLET_SUM - (alldayHisNum + mornHisNum) ;
-		    	iotCurHisAllDTO.setMornNum(overNextNum >= 0 ? overNextNum:0);
-		    	iotCurHisAllDTO.setAfterNum(overNextNum >= 0 ? overNextNum:0);
+				int overMornNextNum = TABLET_SUM - (alldayHisNum + mornHisNum) ;
+				int overAfterNextNum = TABLET_SUM - (alldayHisNum + afterHisNum) ;
+		    	iotCurHisAllDTO.setMornNum(overMornNextNum >= 0 ? overMornNextNum:0);
+		    	iotCurHisAllDTO.setAfterNum(overAfterNextNum >= 0 ? overAfterNextNum:0);
 			}
 	    	List<IotCurentHisDTO>  dataList = deviceBorrowMapper.queryCurentHisRetulInfo(iotCurParam);
 	    	for (IotCurentHisDTO item:dataList) {
