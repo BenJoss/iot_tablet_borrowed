@@ -191,8 +191,7 @@ public class IoTDeviceBorrReturnRecodeSerivceImpl implements IoTDeviceBorrReturn
 	    	IotCurHisAllDTO iotCurHisAllDTO = new IotCurHisAllDTO();
 	    	IotCurHisAllDTO  iotCurHisAll = deviceBorrowMapper.countCurentHisRetulInfo(iotCurParam);
 	    	if (iotCurHisAll == null) {
-	    		reposeDTO.setRepCode(RepCode.SUCCESS_CODE);
-				return reposeDTO;
+	    		iotCurHisAll = new IotCurHisAllDTO();
 			}
 			// 缓存数量
 		    RBucket<Integer> bucketSum = redissonClient.getBucket(IoTDevUtil.TABLET_SUM);

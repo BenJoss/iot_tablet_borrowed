@@ -254,11 +254,11 @@
 		WHERE 
 			1 =1
 			AND DATEDIFF(
-				t.CREATE_TIME,
+				t.START_TIME,
 			NOW())  <![CDATA[ <= ]]> #{endDayNum}
 			
 				AND DATEDIFF(
-				t.CREATE_TIME,
+				t.START_TIME,
 				NOW()) <![CDATA[ >=0 ]]>
 				ORDER BY t.START_TIME DESC
 				LIMIT #{showNum}
