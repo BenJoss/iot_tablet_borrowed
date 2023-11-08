@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.huafen.tablet.model.config.MqttProperties;
+import com.huafen.tablet.util.RandUtil;
 
 @Component
 public class MqttAcceptClient {
@@ -24,9 +25,21 @@ public class MqttAcceptClient {
     
     private static MqttClient mqttClient;
     
+    private  int reConnectNum = 1;
+    
     public static MqttClient getMqttClient() {
         return mqttClient;
     }
+    
+    private String clientId ;
+    
+    public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
     
     public static void setMqttClient(MqttClient mqttClient) {
         MqttAcceptClient.mqttClient = mqttClient;
@@ -35,36 +48,46 @@ public class MqttAcceptClient {
     /**
      * 客户端连接
      */
-    public void connect() {
-        MqttClient client;
-        try {
-            client = new MqttClient(mqttProperties.getHostUrl(), mqttProperties.getClientId(), new MemoryPersistence());
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setUserName(mqttProperties.getUsername());
-            options.setPassword(mqttProperties.getPassword().toCharArray());
-            options.setConnectionTimeout(mqttProperties.getTimeout());
-            options.setKeepAliveInterval(mqttProperties.getKeepAlive());
-            options.setAutomaticReconnect(mqttProperties.getReconnect());
-            options.setCleanSession(mqttProperties.getCleanSession());
-            MqttAcceptClient.setMqttClient(client);
-            try {
-                // 设置回调
-                client.setCallback(mqttAcceptCallback);
-                client.connect(options);
-            } catch (Exception e) {
-            	log.error("客户端连接异常:"+e.getMessage());
-            }
-        } catch (Exception e) {
-        	 log.error("客户端连接异常:"+e.getMessage());
-        }
+    public synchronized void connect() {
+    	if (mqttClient == null || !mqttClient.isConnected()) {
+	    		MqttClient client;
+	            try {
+	            	mqttProperties.setClientId( clientId + RandUtil.generateRandomString());
+	            	log.info("mqtt链接ID:"+mqttProperties.getClientId());
+	                client = new MqttClient(mqttProperties.getHostUrl(), mqttProperties.getClientId(), new MemoryPersistence());
+	                MqttConnectOptions options = new MqttConnectOptions();
+	                options.setUserName(mqttProperties.getUsername());
+	                options.setPassword(mqttProperties.getPassword().toCharArray());
+	                options.setConnectionTimeout(mqttProperties.getTimeout());
+	                options.setKeepAliveInterval(mqttProperties.getKeepAlive());
+	                options.setAutomaticReconnect(mqttProperties.getReconnect());
+	                options.setCleanSession(mqttProperties.getCleanSession());
+	                try {
+	                    // 设置回调
+	                    client.setCallback(mqttAcceptCallback);
+	                    client.connect(options);
+	                    MqttAcceptClient.setMqttClient(client);
+	                } catch (Exception e) {
+	                	log.error("客户端连接异常:"+e.getMessage());
+	                	 while (reConnectNum <= 3) {
+	                		 reConnectNum++;
+	                		 log.info("尝试链接："+"次数 ："+reConnectNum);
+	                		 this.connect();
+	                	 }
+	                }
+	            } catch (Exception e) {
+	            	 log.error("客户端连接异常:"+e.getMessage());
+	            }
+		}
+        
     }
     /**
      * 重新连接
      */
     public void reconnection() {
         try {
-            mqttClient.connect();
-        } catch (MqttException e) {
+        	 this.connect();
+        } catch (Exception e) {
         	log.error("重新连接失败:"+e.getMessage());
         }
     }

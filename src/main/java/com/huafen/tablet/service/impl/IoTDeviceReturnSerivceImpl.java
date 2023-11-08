@@ -161,10 +161,8 @@ public class IoTDeviceReturnSerivceImpl implements IoTDeviceReturnSerivce{
 		try {
 			String topic = iotBorroFlowDTO.getTopic();
 			String verifyCode = iotBorroFlowDTO.getVerifyCode();
-			if (!redissonClient.getBucket(topic).isExists()) {
-				 RBucket<String> bucket = redissonClient.getBucket(topic, StringCodec.INSTANCE);
-				 bucket.trySet(verifyCode, RedisUtil.DEFAULT_EXPIRE_TIME_SECONDS, TimeUnit.SECONDS);
-			}
+			RBucket<String> bucket = redissonClient.getBucket(topic, StringCodec.INSTANCE);
+		    bucket.trySet(verifyCode, RedisUtil.DEFAULT_EXPIRE_TIME_SECONDS, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			logger.error("异常"+ e.getMessage());
 		}

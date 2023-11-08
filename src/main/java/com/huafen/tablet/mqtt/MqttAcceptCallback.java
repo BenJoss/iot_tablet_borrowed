@@ -34,15 +34,17 @@ public class MqttAcceptCallback implements MqttCallbackExtended{
 	@Override
 	public void connectionLost(Throwable cause) {
 		log.info("【MQTT-消费端】连接断开：" + cause.getMessage());
-        int reConnectNum = 0;
-        while (reConnectNum <= 3) {
-        	if (MqttAcceptClient.getMqttClient() == null || !MqttAcceptClient.getMqttClient().isConnected()) {
-                log.info("【MQTT-消费端】emqx重新连接....................................................");
-                mqttAcceptClient.reconnection();
-            }else {
-            	return;
-            }
-        	reConnectNum++;
+		synchronized(this) {
+			int reConnectNum = 0;
+	        while (reConnectNum <= 3) {
+	        	if (MqttAcceptClient.getMqttClient() == null || !MqttAcceptClient.getMqttClient().isConnected()) {
+	                log.info("【MQTT-消费端】emqx重新连接....................................................");
+	                mqttAcceptClient.reconnection();
+	            }else {
+	            	return;
+	            }
+	        	reConnectNum++;
+			}
 		}
 	}
     /**
@@ -53,6 +55,7 @@ public class MqttAcceptCallback implements MqttCallbackExtended{
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		  String tabletID = new String(message.getPayload());
+		  log.error("线程 "+Thread.currentThread().getName()+" mqtt客户端接受主题："+topic+"   消息："+ tabletID);
 		  IotBorroFlowDTO iotBorroFlowDTO = new IotBorroFlowDTO();
 		  iotBorroFlowDTO.setTabletID(tabletID);
 		  redisQueueService.msgBorrotProduce(iotBorroFlowDTO);

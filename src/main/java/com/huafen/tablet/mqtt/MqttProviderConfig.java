@@ -13,12 +13,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.huafen.tablet.model.config.MqttProviderPros;
+import com.huafen.tablet.util.RandUtil;
 
 @Configuration
 public class MqttProviderConfig {
 
     @Autowired
     private MqttProviderPros mqttProperties;
+    @Autowired
+    private MqttProviderCallBack mqttProviderCallBack;
     
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(MqttProviderConfig.class);
 	/**
@@ -26,51 +29,56 @@ public class MqttProviderConfig {
      */
     private static MqttClient client;
     
+    private  int reConnectNum = 1;
     
     public static MqttClient getMqttClient() {
         return client;
     }
     
     @Bean
-    public MqttClient connect(){
-        try {
-            //创建MQTT客户端对象
-            client = new MqttClient(mqttProperties.getHostUrl(),mqttProperties.getClientId(),new MemoryPersistence());
-            //连接设置
-            MqttConnectOptions options = new MqttConnectOptions();
-            //是否清空session，设置为false表示服务器会保留客户端的连接记录（订阅主题，qos），客户端重连之后能获取到服务器在客户端断开连接期间推送的消息
-            //设置为true表示每次连接到服务端都是以新的身份
-            options.setCleanSession(true);
-            //设置连接用户名
-            options.setUserName(mqttProperties.getUsername());
-            //设置连接密码
-            options.setPassword(mqttProperties.getPassword().toCharArray());
-            //设置超时时间，单位为秒
-            options.setConnectionTimeout(mqttProperties.getTimeout());
-            //设置心跳时间 单位为秒，表示服务器每隔1.5*20秒的时间向客户端发送心跳判断客户端是否在线
-            options.setKeepAliveInterval(mqttProperties.getKeepAlive());
-            options.setAutomaticReconnect(mqttProperties.getReconnect());
-            options.setCleanSession(mqttProperties.getCleanSession());
-            //设置遗嘱消息的话题，若客户端和服务器之间的连接意外断开，服务器将发布客户端的遗嘱信息
-            options.setWill("willTopic",(mqttProperties.getClientId() + "与服务器断开连接").getBytes(),0,false);
-            //设置回调
-            client.setCallback(new MqttProviderCallBack());
-            client.connect(options);
-        } catch (MqttException e) {
-        	log.error(e.getLocalizedMessage());
-        }
-        return client;
+    public synchronized MqttClient connect(){
+    	if (client == null ||!client.isConnected()) {
+    		try {
+                //创建MQTT客户端对象
+    			String  clientId =  mqttProperties.getClientId() + RandUtil.generateRandomString();
+                client = new MqttClient(mqttProperties.getHostUrl(),clientId,new MemoryPersistence());
+                //连接设置
+                MqttConnectOptions options = new MqttConnectOptions();
+                //是否清空session，设置为false表示服务器会保留客户端的连接记录（订阅主题，qos），客户端重连之后能获取到服务器在客户端断开连接期间推送的消息
+                //设置为true表示每次连接到服务端都是以新的身份
+                options.setCleanSession(true);
+                //设置连接用户名
+                options.setUserName(mqttProperties.getUsername());
+                //设置连接密码
+                options.setPassword(mqttProperties.getPassword().toCharArray());
+                //设置超时时间，单位为秒
+                options.setConnectionTimeout(mqttProperties.getTimeout());
+                //设置心跳时间 单位为秒，表示服务器每隔1.5*20秒的时间向客户端发送心跳判断客户端是否在线
+                options.setKeepAliveInterval(mqttProperties.getKeepAlive());
+                options.setAutomaticReconnect(mqttProperties.getReconnect());
+                options.setCleanSession(mqttProperties.getCleanSession());
+                //设置遗嘱消息的话题，若客户端和服务器之间的连接意外断开，服务器将发布客户端的遗嘱信息
+                options.setWill("willTopic",(mqttProperties.getClientId() + "与服务器断开连接").getBytes(),0,false);
+                //设置回调
+                client.setCallback(mqttProviderCallBack);
+                client.connect(options);
+            } catch (MqttException e) {
+            	log.error("客户端连接异常:"+e.getMessage());
+    	       	 while (reConnectNum <= 3) {
+    	       		 reConnectNum++;
+    	       		 log.info("尝试链接："+"次数 ："+reConnectNum);
+    	       		 this.connect();
+    	       	 }
+            }
+		}
+    	return client;
     }
     
     /**
      * 重新连接
      */
     public void reconnection() {
-        try {
-        	client.connect();
-        } catch (MqttException e) {
-        	log.error("重新连接失败:"+e.getMessage());
-        }
+        this.connect();
     }
     
     public void publish(int qos,boolean retained,String topic,String message){
