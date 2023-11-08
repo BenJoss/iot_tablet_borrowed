@@ -63,9 +63,9 @@ mqtt:
   cleanSession: true
   reconnect: true
   #连接超时
-  timeout: 1000
+  timeout: 60
   #设置会话心跳时间
-  keepalive: 100
+  keepalive: 30
   defaultTopic: A2-227/227-wendu:A2-227/227-shidu
   dmqInfo:
          -/227-wendu
@@ -82,9 +82,9 @@ mqttprv:
   cleanSession: true
   reconnect: true
   #连接超时
-  timeout: 1000
+  timeout: 60
   #设置会话心跳时间
-  keepalive: 100
+  keepalive: 30
   defaultTopic: A2-228/228-power:A2-227/227-shidu
   dmqInfo:
          -/228-power
