@@ -24,12 +24,17 @@ public class DateUtil {
 	}
 	
 	public static  String getNextMonth() {
-		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH) +1+1;
-		StringBuilder  mothBuilder = new StringBuilder();
-		mothBuilder.append(year);
-		mothBuilder.append(month);
-		return mothBuilder.toString();
+			Calendar calendar = Calendar.getInstance();
+			int year = calendar.get(Calendar.YEAR);
+			int month = calendar.get(Calendar.MONTH) +1+1;
+			StringBuilder  mothBuilder = new StringBuilder();
+			mothBuilder.append(year);
+			if (month < 10) {
+				mothBuilder.append("0"+month);
+			}else {
+				mothBuilder.append(month);
+			}
+			
+			return mothBuilder.toString();
 	}
 }

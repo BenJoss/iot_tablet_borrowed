@@ -1,7 +1,7 @@
 server:
   servlet:
     context-path: /tablet-borrowed-service
-  port: 8082
+  port: 8080
 spring:
   cache:
     type: ehcache
@@ -57,6 +57,8 @@ redis:
   port: 6379
   timeout: 30000
   database: 1
+  username: default
+  password: New6@7123!
   lockWatchdogTimeout: 30000
   connectionPoolSize: 24
   tryTime: 60000
@@ -65,7 +67,7 @@ redis:
   prefix: borrowed
 #mqtt客户端配置
 mqtt:
-  hostUrl: tcp://172.27.35.3:1883
+  hostUrl: tcp://172.28.5.134:17909
   username: NARI
   password: Sgepri.1617
   clientid: mqtt_accept_client
@@ -82,7 +84,7 @@ mqtt:
   qos: 
      - 2
 mqttprv:
-  hostUrl: tcp://172.27.35.3:1883
+  hostUrl: tcp://172.28.5.134:17909
   username: NARI
   password: Sgepri.1617
   clientid: provider-id

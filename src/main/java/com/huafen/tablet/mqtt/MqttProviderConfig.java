@@ -10,6 +10,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import com.huafen.tablet.model.config.MqttProviderPros;
@@ -36,6 +37,7 @@ public class MqttProviderConfig {
     }
     
     @Bean
+    @Conditional(MqttCondition.class)
     public synchronized MqttClient connect(){
     	if (client == null ||!client.isConnected()) {
     		try {
